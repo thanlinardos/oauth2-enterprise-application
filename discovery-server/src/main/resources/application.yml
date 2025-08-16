@@ -1,0 +1,19 @@
+spring:
+  application.name: discovery-server
+  profiles:
+    active: prod
+  config:
+    import: ${CONFIG_SERVER_IMPORT}
+
+server:
+  port: ${SERVER_PORT}
+
+eureka:
+  instance:
+    hostname: ${HOSTNAME}
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  environment: prod

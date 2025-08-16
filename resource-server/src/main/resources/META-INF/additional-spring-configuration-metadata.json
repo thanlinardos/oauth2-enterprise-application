@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "scheduling.enabled",
+      "type": "java.lang.String",
+      "description": "Enable/Disable scheduled tasks."
+    },
+    {
+      "name": "integration.test.enabled",
+      "type": "java.lang.String",
+      "description": "Used to denote whether currently an integration test is executed. Can then be used to mock certain beans."
+    },
+    {
+      "name": "secrets.refresh.enabled",
+      "type": "java.lang.String",
+      "description": "True if the secrets should be refreshed depending on the value of {secrets.refresh-interval-ms}."
+    },
+    {
+      "name": "secrets.refresh-interval-ms",
+      "type": "java.lang.String",
+      "description": "The interval to refresh the application's secrets in milliseconds."
+    }
+  ]
+}

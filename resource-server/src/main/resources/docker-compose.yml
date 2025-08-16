@@ -1,0 +1,44 @@
+version: '3.3'
+
+networks:
+  vault_default:
+    external: true
+
+services:
+  db:
+    image: mysql:8.2.0
+    env_file:
+      - dev.env
+    ports:
+      - "3308:3307"
+    volumes:
+      - ../../../../project-db-files/mysql-data:/var/lib/mysql:rw
+      - ./my.cnf:/etc/mysql/my.cnf
+    networks:
+      - vault_default
+  keycloak.local:
+    image: quay.io/keycloak/keycloak:25.0.6
+    depends_on:
+      - db
+    command: ["start",
+              "--log-level=DEBUG",
+              "--spi-theme-static-max-age=-1",
+              "--spi-theme-cache-themes=false",
+              "--spi-theme-cache-templates=false",
+              "--http-enabled=false",
+              "--https-key-store-file=/opt/keycloak/conf/local_keycloak_client.p12",
+              "--https-key-store-password=pass",
+              "--https-trust-store-file=/opt/keycloak/conf/truststore.p12",
+              "--https-trust-store-password=password"
+    ]
+    networks:
+      - vault_default
+    env_file:
+      - dev.env
+    volumes:
+      - ./keycloak/themes/:/opt/keycloak/themes
+      - ./keycloak/local_keycloak_client.p12:/opt/keycloak/conf/local_keycloak_client.p12
+      - ./keycloak/truststore.p12:/opt/keycloak/conf/truststore.p12
+#      - ./keycloak/keycloak.cnf:/opt/keycloak/conf/keycloak.conf
+    ports:
+      - "8180:8180"

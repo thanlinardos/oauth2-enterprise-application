@@ -1,0 +1,53 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+mavenSonarBuild.sh
+owasp-dependency-check-logs/
+.sonarlint
+
+# Configs and resources
+flyway.conf
+src/main/resources/cert
+
+src/main/resources/db/h2/*
+src/main/resources/db/migration/*
+!src/main/resources/db/h2/schema.sql
+!src/main/resources/db/h2/clearUserData.sql
+!src/main/resources/db/migration/V1_0_1__custom_users.sql
+!src/main/resources/db/migration/V1_0_3__account_tables.sql
+
+src/main/resources/static/assets/css/style-starter.css
+src/main/resources/static/assets/webfonts/**
+src/main/resources/keycloak/themes/bankappui/login/resources/fonts/**
+src/main/resources/keycloak/keycloak.cnf

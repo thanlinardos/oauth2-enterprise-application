@@ -1,0 +1,16 @@
+project-db-files
+datadumps
+TODOS
+eazybankdev-realm-export.json
+**/*.env
+**/*.p12
+**/*.crt
+**/*.csr
+**/*.key
+
+**/bootstrap*.css
+**/font-awesome.css
+**/bootstrap*.js
+**/bootstrap.esm.js
+**/bootstrap*.map
+**/jquery-*.js

@@ -1,0 +1,129 @@
+package com.thanlinardos.resource_server.service;
+
+import com.thanlinardos.resource_server.TestUtils;
+import com.thanlinardos.resource_server.WithMockCustomUser;
+import com.thanlinardos.resource_server.model.info.OwnerType;
+import com.thanlinardos.resource_server.model.mapped.CustomerModel;
+import com.thanlinardos.resource_server.model.mapped.OwnerModel;
+import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import jakarta.annotation.Nullable;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.UndeclaredThrowableException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static com.thanlinardos.resource_server.TestUtils.*;
+import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
+
+@SpringBootTest
+@TestPropertySource("classpath:application-test.properties")
+@WithMockCustomUser()
+@Sql(scripts = {"classpath:db/h2/initRoleData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"classpath:db/h2/initUserData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+class OwnerServiceTest {
+
+    @Autowired
+    private OauthRoleService roleService;
+    @Autowired
+    private OwnerService ownerService;
+
+    @Test
+    @Sql(scripts = {"classpath:db/h2/clearUserData.sql"},
+            config = @SqlConfig(transactionMode = ISOLATED),
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @WithMockCustomUser(name = "admin@email.com", roles = {ROLE_USER, ROLE_MANAGER, ROLE_ADMIN, ROLE_OWNER})
+    void save() {
+        OwnerModel expected = OwnerModel.builder()
+                .type(OwnerType.CUSTOMER)
+                .uuid(UUID.randomUUID())
+                .principalName("test@email.com")
+                .customer(TestUtils.buildTestCustomer("test@email.com"))
+                .privilegeLevel(1)
+                .roles(List.of(buildRole(ROLE_USER), buildRole(ROLE_MANAGER), buildRole(ROLE_ADMIN)))
+                .createdAt(LocalDateTime.now())
+                .createdBy("test")
+                .updatedAt(LocalDateTime.now())
+                .updatedBy("test")
+                .build();
+        OwnerModel actual = ownerService.save(expected);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    public static Stream<Arguments> getOwnerByNameParams() {
+        return Stream.of(
+                Arguments.of("Simple user",
+                        "user@email.com",
+                        null,
+                        TestUtils.buildTestOwner("user@email.com", List.of(buildRole(ROLE_USER))),
+                        ""),
+                Arguments.of("Manager, no rights",
+                        "manager@email.com",
+                        IllegalAccessException.class,
+                        null,
+                        "[OwnerService.getOwnerByName(..)] Unauthorized Access to Resource: %s for user: " + TestUtils.DEFAULT_USER),
+                Arguments.of("Admin, no rights",
+                        "admin@email.com",
+                        IllegalAccessException.class,
+                        null,
+                        "[OwnerService.getOwnerByName(..)] Unauthorized Access to Resource: %s for user: " + TestUtils.DEFAULT_USER),
+                Arguments.of("User not found",
+                        "nonexistent",
+                        null,
+                        null,
+                        "")
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getOwnerByNameParams")
+    @Transactional
+    void getOwnerByName(String description, String email, Class<?> exceptionType, OwnerModel expected, String message) {
+        if (exceptionType == null) {
+            OwnerModel actual = ownerService.getOwnerByName(email).orElse(null);
+            assertThatOwnerEqualsOrNull(expected, actual);
+        } else {
+            UndeclaredThrowableException exception = Assertions.assertThrows(UndeclaredThrowableException.class, () -> ownerService.getOwnerByName(email));
+            Assertions.assertEquals(exceptionType, exception.getCause().getClass());
+            Assertions.assertTrue(exception.getCause().getMessage().contains(String.format(message, email)));
+        }
+    }
+
+    private static void assertThatOwnerEqualsOrNull(@Nullable OwnerModel expected, @Nullable OwnerModel actual) {
+        if(expected == null) {
+            Assertions.assertNull(actual);
+        } else {
+            assertThatOwnerEquals(expected, actual);
+        }
+    }
+
+    private static void assertThatOwnerEquals(OwnerModel expected, OwnerModel actual) {
+        Assertions.assertNotNull(actual);
+
+        Assertions.assertEquals(expected.getPrincipalName(), actual.getPrincipalName());
+        Assertions.assertEquals(expected.getRoles(), actual.getRoles());
+        Assertions.assertEquals(expected.getPrivilegeLevel(), actual.getPrivilegeLevel());
+        Assertions.assertEquals(expected.getType(), actual.getType());
+
+        CustomerModel actualCustomer = actual.getCustomer();
+        CustomerModel expectedCustomer = expected.getCustomer();
+        Assertions.assertNotNull(actualCustomer);
+        Assertions.assertNotNull(expectedCustomer);
+
+        Assertions.assertEquals(expectedCustomer.getUsername(), actualCustomer.getUsername());
+        Assertions.assertEquals(expectedCustomer.getEmail(), actualCustomer.getEmail());
+    }
+
+}

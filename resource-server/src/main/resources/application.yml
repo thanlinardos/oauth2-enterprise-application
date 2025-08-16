@@ -1,0 +1,87 @@
+logging:
+  pattern:
+    console: "%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %clr(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
+spring:
+  application:
+    name: resource-server
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+  jpa:
+    open-in-view: false # Enable for leaving JPA connection open while view rendering with thymeleaf
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
+        opaquetoken:
+          introspection-uri: ${INTROSPECTION_URI}
+          client-id: ${INTROSPECTION_CLIENT_ID}
+          client-secret: ${INTROSPECTION_CLIENT_SECRET}
+  flyway:
+    enabled: false
+  h2:
+    console:
+      enabled: false
+  config:
+    import: "optional:configserver:http://localhost:8888"
+  cloud:
+    config:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    refresh:
+      access: unrestricted
+server:
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+    key-store: "classpath:cert/server.p12"
+    key-store-password: ${KEYSTORE_PASS}
+    key-store-type: PKCS12
+    key-alias: server
+    client-auth: need
+    trust-store: "classpath:cert/truststore.p12"
+    trust-store-password: ${TRUSTSTORE_PASS}
+    trust-store-type: PKCS12
+    key-password: ${KEYSTORE_PASS}
+scheduling:
+  enabled: true
+integration:
+  test:
+    enabled: false
+secrets:
+  refresh-interval-ms: 10000
+  refresh:
+    displayValues: false
+    enabled: true
+angular-ui:
+  url: ${UI_URL}
+oauth2:
+  auth-server: KEYCLOAK
+  github:
+    client:
+      id: ${GITHUB_CLIENT_ID}
+      secret: ${GITHUB_CLIENT_SECRET}
+  facebook:
+    client:
+      id: ${FACEBOOK_CLIENT_ID}
+      secret: ${FACEBOOK_CLIENT_SECRET}
+  keycloak:
+    url: ${KEYCLOAK_AUTH_URI}
+    realm: ${KEYCLOAK_REALM}
+    token: JWT
+    client:
+      id: ${KEYCLOAK_CLIENT_ID}
+      secret: ${KEYCLOAK_CLIENT_SECRET}
+      truststore:
+        path: "classpath:cert/truststore.p12"
+        password: password
+      keystore:
+        path: "classpath:cert/local_keycloak_client/local_keycloak_client.p12"
+        password: pass
