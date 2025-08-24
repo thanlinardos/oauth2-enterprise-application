@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/resource-server/src/main/resources/db/h2/initRoleData.sql" value="8e75dd75-dadd-48ab-8d14-ff3a5e57a1a7" />
+    <file url="file://$PROJECT_DIR$/resource-server/src/main/resources/db/h2/schema.sql" value="8e75dd75-dadd-48ab-8d14-ff3a5e57a1a7" />
+  </component>
+</project>

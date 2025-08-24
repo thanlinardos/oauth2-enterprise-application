@@ -77,6 +77,7 @@ Author URL: http://w3layouts.com
                     th:text="${logoutMessage}"/>
             </ul>
             <table>
+                <caption>Login with OAuth 2.0</caption>
                 <tr th:each="choice, istat: ${oauth2Choices}">
                     <th>
                         <a th:href="@{'/oauth2/authorization/' + ${choice}}" class="btn btn-style btn-style-3 text-left mb-4">

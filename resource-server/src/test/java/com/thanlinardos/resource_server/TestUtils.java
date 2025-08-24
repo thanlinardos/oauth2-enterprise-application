@@ -37,6 +37,34 @@ public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser>
     public static final String ROLE_MANAGER = "ROLE_MANAGER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_OWNER = "ROLE_OWNER";
+    public static final GrantedAuthority[] USER_AUTHORITIES = {
+            new SimpleGrantedAuthority(ROLE_USER),
+            new SimpleGrantedAuthority("READ_USER"),
+            new SimpleGrantedAuthority("READ_OWNER"),
+            new SimpleGrantedAuthority("READ_CUSTOMERS_USERNAME")
+    };
+    public static final GrantedAuthority[] MANAGER_AUTHORITIES = {
+            new SimpleGrantedAuthority(ROLE_MANAGER),
+            new SimpleGrantedAuthority("READ_USER"),
+            new SimpleGrantedAuthority("READ_OWNER"),
+            new SimpleGrantedAuthority("READ_CUSTOMERS_USERNAME")
+    };
+    public static final GrantedAuthority[] ADMIN_AUTHORITIES = {
+            new SimpleGrantedAuthority(ROLE_ADMIN),
+            new SimpleGrantedAuthority("READ_USER"),
+            new SimpleGrantedAuthority("READ_OWNER"),
+            new SimpleGrantedAuthority("READ_CUSTOMERS_USERNAME"),
+            new SimpleGrantedAuthority("ALL_ADMIN"),
+            new SimpleGrantedAuthority("CREATE_CUSTOMER"),
+    };
+    public static final GrantedAuthority[] OWNER_AUTHORITIES = {
+            new SimpleGrantedAuthority(ROLE_OWNER),
+            new SimpleGrantedAuthority("READ_USER"),
+            new SimpleGrantedAuthority("READ_OWNER"),
+            new SimpleGrantedAuthority("READ_CUSTOMERS_USERNAME"),
+            new SimpleGrantedAuthority("ALL_ADMIN"),
+            new SimpleGrantedAuthority("CREATE_CUSTOMER"),
+    };
 
     public static final Jwt ADMIN_PRINCIPAL = Jwt.withTokenValue("admin")
             .header("alg", "none")
@@ -159,6 +187,7 @@ public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser>
                 Arrays.stream(customUser.roles())
                         .map(TestUtils::buildRole)
                         .flatMap(TestUtils::getGrantedAuthorityStreamIncludingRoleName)
+                        .distinct()
                         .toList()
         );
         context.setAuthentication(auth);
@@ -166,7 +195,13 @@ public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser>
     }
 
     private static @NotNull Stream<GrantedAuthority> getGrantedAuthorityStreamIncludingRoleName(RoleModel role) {
-        return Stream.concat(role.getGrantedAuthorities().stream(), Stream.of(new SimpleGrantedAuthority(role.getRole())));
+        return switch (role.getName()) {
+            case ROLE_USER -> Arrays.stream(USER_AUTHORITIES);
+            case ROLE_MANAGER -> Arrays.stream(MANAGER_AUTHORITIES);
+            case ROLE_ADMIN -> Arrays.stream(ADMIN_AUTHORITIES);
+            case ROLE_OWNER -> Arrays.stream(OWNER_AUTHORITIES);
+            default -> Stream.empty();
+        };
     }
 
     public static RoleModel buildRole(String name) {

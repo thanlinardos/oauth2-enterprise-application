@@ -4,14 +4,13 @@ import com.thanlinardos.resource_server.model.entity.RoleJpa;
 import com.thanlinardos.resource_server.model.mapped.base.BasicIdModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Role;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.AccessType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,8 @@ public class RoleModel extends BasicIdModel implements Serializable, Role {
 
     private String role;
     private int privilegeLvl;
-    private List<AuthorityModel> authorities;
+    @Builder.Default
+    private List<AuthorityModel> authorities = new ArrayList<>();
 
     public RoleModel(RoleJpa entity) {
         super(entity);

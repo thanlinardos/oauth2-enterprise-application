@@ -39,6 +39,8 @@ class OwnerServiceTest {
     private OauthRoleService roleService;
     @Autowired
     private OwnerService ownerService;
+    @Autowired
+    private UserRoleCacheService userRoleCacheService;
 
     @Test
     @Sql(scripts = {"classpath:db/h2/clearUserData.sql"},
@@ -52,7 +54,7 @@ class OwnerServiceTest {
                 .principalName("test@email.com")
                 .customer(TestUtils.buildTestCustomer("test@email.com"))
                 .privilegeLevel(1)
-                .roles(List.of(buildRole(ROLE_USER), buildRole(ROLE_MANAGER), buildRole(ROLE_ADMIN)))
+                .roles(List.of(roleService.findRole(ROLE_USER), roleService.findRole(ROLE_MANAGER), roleService.findRole(ROLE_ADMIN)))
                 .createdAt(LocalDateTime.now())
                 .createdBy("test")
                 .updatedAt(LocalDateTime.now())
@@ -96,8 +98,9 @@ class OwnerServiceTest {
             assertThatOwnerEqualsOrNull(expected, actual);
         } else {
             UndeclaredThrowableException exception = Assertions.assertThrows(UndeclaredThrowableException.class, () -> ownerService.getOwnerByName(email));
-            Assertions.assertEquals(exceptionType, exception.getCause().getClass());
-            Assertions.assertTrue(exception.getCause().getMessage().contains(String.format(message, email)));
+            Throwable cause = exception.getCause();
+            Assertions.assertEquals(exceptionType, cause.getClass());
+            Assertions.assertTrue(cause.getMessage().contains(String.format(message, email)));
         }
     }
 
@@ -113,7 +116,7 @@ class OwnerServiceTest {
         Assertions.assertNotNull(actual);
 
         Assertions.assertEquals(expected.getPrincipalName(), actual.getPrincipalName());
-        Assertions.assertEquals(expected.getRoles(), actual.getRoles());
+        Assertions.assertEquals(expected.getRoleNames(), actual.getRoleNames());
         Assertions.assertEquals(expected.getPrivilegeLevel(), actual.getPrivilegeLevel());
         Assertions.assertEquals(expected.getType(), actual.getType());
 

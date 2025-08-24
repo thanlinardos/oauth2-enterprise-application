@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,5 +81,11 @@ public class OwnerModel extends BasicAuditableModel implements Serializable, Pri
                 .createDt(this.getCreatedAt().toLocalDate())
                 .roles(this.roles)
                 .build();
+    }
+
+    public Collection<String> getRoleNames() {
+        return roles.stream()
+                .map(RoleModel::getName)
+                .toList();
     }
 }

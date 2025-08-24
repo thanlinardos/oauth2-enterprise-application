@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public abstract class AspectUtils {
+public class AspectUtils {
 
     private AspectUtils() {
     }
