@@ -6,6 +6,7 @@
         <option value="FILE:src/main/resources/keycloak/themes/bankappui/login/resources/js/bootstrap.esm.js" />
         <option value="FILE:src/main/resources/keycloak/themes/bankappui/login/resources/css/bootstrap.css" />
         <option value="FILE:src/main/resources/keycloak/themes/bankappui/login/resources/css/font-awesome.css" />
+        <option value="FILE:owasp-dependency-check-logs/dependency-check-report.html" />
       </list>
     </option>
   </component>
