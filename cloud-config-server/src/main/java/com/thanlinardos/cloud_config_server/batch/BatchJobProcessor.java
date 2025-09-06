@@ -8,8 +8,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for processing batch jobs with scheduling, retry, and error handling capabilities.
@@ -106,13 +108,18 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
      * It is called before scheduling a new task to ensure that the map only contains active tasks.
      */
     private void cleanUpFinishedTasks() {
-        long numberOfCleanedUpTasks = scheduledTasks.values().stream()
-                .filter(Task::isDone)
-                .map(Task::getName)
+        long numberOfCleanedUpTasks = getFinishedTaskNames().stream()
                 .map(scheduledTasks::remove)
                 .filter(Objects::nonNull)
                 .count();
         log.info("Cleaned up {} tasks.", numberOfCleanedUpTasks);
+    }
+
+    private Set<String> getFinishedTaskNames() {
+        return scheduledTasks.values().stream()
+                .filter(Task::isDone)
+                .map(Task::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
