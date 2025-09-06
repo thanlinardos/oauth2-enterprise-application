@@ -3,7 +3,7 @@ spring:
   profiles:
     active: prod
   config:
-    import: ${CONFIG_SERVER_IMPORT}
+    import: optional:configserver:${CONFIG_SERVER_URI}
 
 server:
   port: ${SERVER_PORT}

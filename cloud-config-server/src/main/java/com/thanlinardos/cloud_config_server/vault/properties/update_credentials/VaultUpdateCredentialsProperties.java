@@ -1,4 +1,4 @@
-package com.thanlinardos.cloud_config_server.vault.properties;
+package com.thanlinardos.cloud_config_server.vault.properties.update_credentials;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

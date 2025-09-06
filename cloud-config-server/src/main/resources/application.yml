@@ -21,3 +21,12 @@ spring:
         kv-version: 2
         profile-separator: /
 kv-data-path: kv/data
+batch:
+  task-scheduler:
+    pool-size: 10
+  vault-sync:
+    backoff-step-size: 60
+    max-delay: 3600
+    max-task-retries: 5
+    max-execution-attempts: 3
+    max-lease-expiry-percent: 90
