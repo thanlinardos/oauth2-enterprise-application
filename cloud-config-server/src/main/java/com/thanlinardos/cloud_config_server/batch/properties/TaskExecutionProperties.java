@@ -1,4 +1,4 @@
-package com.thanlinardos.cloud_config_server.vault.properties.batch;
+package com.thanlinardos.cloud_config_server.batch.properties;
 
 public record TaskExecutionProperties(int backOffStepSize, int maxDelay, int maxTaskRetries) {
 }

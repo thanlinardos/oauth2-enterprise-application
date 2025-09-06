@@ -28,7 +28,6 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
 
     protected BatchJobProcessor(ThreadPoolTaskScheduler taskScheduler, C config) {
         this.taskScheduler = taskScheduler;
-        this.taskScheduler.initialize();
         this.config = config;
     }
 

@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Configuration
 public class BatchJobConfiguration {
 
-    @Value("#{T(Integer).parseInt('${batch.task-scheduler.pool-size}')}")
+    @Value("${batch.task-scheduler.pool-size}")
     private int poolSize;
 
     @Bean

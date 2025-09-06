@@ -1,6 +1,5 @@
 package com.thanlinardos.cloud_config_server.batch.properties;
 
-import com.thanlinardos.cloud_config_server.vault.properties.batch.TaskExecutionProperties;
 import lombok.Getter;
 
 @Getter
