@@ -22,6 +22,8 @@ spring:
         profile-separator: /
 kv-data-path: kv/data
 batch:
+  task-scheduler:
+    pool-size: 10
   vault-sync:
     backoff-step-size: 60
     max-delay: 3600

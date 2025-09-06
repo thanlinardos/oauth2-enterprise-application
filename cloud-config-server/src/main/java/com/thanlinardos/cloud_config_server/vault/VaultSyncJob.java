@@ -14,6 +14,7 @@ import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +28,8 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public VaultSyncJob(VaultSyncJobConfig config) {
-        super(config);
+    public VaultSyncJob(ThreadPoolTaskScheduler taskScheduler, VaultSyncJobConfig config) {
+        super(taskScheduler, config);
     }
 
     /**
@@ -149,7 +150,7 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
         try {
             syncDbCredentialsForAppEnv(appName, environment);
         } catch (Exception e) {
-            logErrorAndRetryFailedTask(e, getAppEnvName(appName, environment.name()), () -> syncDbCredentialsForAppEnvWithRetry(appName, environment));
+            retryFailedTask(e, getAppEnvName(appName, environment.name()), () -> syncDbCredentialsForAppEnvWithRetry(appName, environment));
         }
     }
 

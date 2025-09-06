@@ -1,6 +1,6 @@
 package com.thanlinardos.cloud_config_server.vault.properties.batch;
 
-import com.thanlinardos.cloud_config_server.batch.BatchJobConfig;
+import com.thanlinardos.cloud_config_server.batch.properties.BatchJobConfig;
 import lombok.Getter;
 import org.springframework.web.client.RestTemplate;
 

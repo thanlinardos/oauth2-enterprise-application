@@ -2,7 +2,9 @@ package com.thanlinardos.cloud_config_server.batch;
 
 import lombok.*;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class Task {
@@ -17,5 +19,26 @@ public class Task {
     public Task(String name, ScheduledFuture<?> scheduledFuture) {
         this.name = name;
         this.scheduledFuture = scheduledFuture;
+    }
+
+    /**
+     * Check if the task is done.
+     *
+     * @return true if the task is done, false otherwise.
+     */
+    public boolean isDone() {
+        return scheduledFuture.isDone();
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", retryCount=" + retryCount +
+                ", isMarkedForCancellation=" + isMarkedForCancellation +
+                ", isDone=" + scheduledFuture.isDone() +
+                ", isCanceled=" + scheduledFuture.isCancelled() +
+                ", executionTime=" + Instant.now().plusSeconds(scheduledFuture.getDelay(TimeUnit.SECONDS)) +
+                '}';
     }
 }

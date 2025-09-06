@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -56,9 +57,9 @@ public class VaultConfiguration {
     private int maxLeaseExpiryPercent;
 
     @Bean
-    public VaultSyncJob vaultSyncJob(ClientHttpRequestFactory vaultClientRequestFactory) {
+    public VaultSyncJob vaultSyncJob(ClientHttpRequestFactory vaultClientRequestFactory, ThreadPoolTaskScheduler taskScheduler) {
         VaultSyncJobConfig config = getVaultSyncJobConfig(vaultClientRequestFactory);
-        VaultSyncJob vaultSyncJob = new VaultSyncJob(config);
+        VaultSyncJob vaultSyncJob = new VaultSyncJob(taskScheduler, config);
         vaultSyncJob.start();
         return vaultSyncJob;
     }
