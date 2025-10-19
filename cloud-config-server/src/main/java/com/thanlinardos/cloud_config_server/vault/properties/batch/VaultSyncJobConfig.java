@@ -13,10 +13,15 @@ public class VaultSyncJobConfig extends BatchJobConfig {
     private final RestTemplate restTemplate;
     private final VaultConnectionProperties connectionProperties;
 
-    public VaultSyncJobConfig(int maxExecutionAttempts, TaskExecutionProperties taskExecutionProperties, VaultConnectionProperties connectionProperties, RestTemplate restTemplate) {
-        super(maxExecutionAttempts, taskExecutionProperties, VAULT_SYNC_JOB);
+    public VaultSyncJobConfig(int maxExecutionAttempts, TaskExecutionProperties taskExecutionProperties, VaultConnectionProperties connectionProperties, RestTemplate restTemplate, boolean runOnStartUp) {
+        super(maxExecutionAttempts, taskExecutionProperties, runOnStartUp);
         this.restTemplate = restTemplate;
         this.connectionProperties = connectionProperties;
+    }
+
+    @Override
+    public String getName() {
+        return VAULT_SYNC_JOB;
     }
 
     /**
@@ -26,15 +31,6 @@ public class VaultSyncJobConfig extends BatchJobConfig {
      */
     public String getConfigServerName() {
         return connectionProperties.configServerName();
-    }
-
-    /**
-     * The path in Vault where the KV secrets engine is mounted.
-     *
-     * @return the KV data path.
-     */
-    public String getKvDataPath() {
-        return connectionProperties.kvDataPath();
     }
 
     /**

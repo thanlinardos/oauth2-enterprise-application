@@ -1,19 +1,22 @@
 package com.thanlinardos.cloud_config_server.batch.properties;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class BatchJobConfig {
+@AllArgsConstructor
+public abstract class BatchJobConfig {
 
     private final int maxExecutionAttempts;
     private final TaskExecutionProperties taskExecutionProperties;
-    private final String name;
+    private final boolean runOnStartUp;
 
-    public BatchJobConfig(int maxExecutionAttempts, TaskExecutionProperties taskExecutionProperties, String name) {
-        this.maxExecutionAttempts = maxExecutionAttempts;
-        this.taskExecutionProperties = taskExecutionProperties;
-        this.name = name;
-    }
+    /**
+     * The name of the batch job.
+     *
+     * @return the batch job name.
+     */
+    public abstract String getName();
 
     /**
      * Step size in seconds to increase the delay between retries

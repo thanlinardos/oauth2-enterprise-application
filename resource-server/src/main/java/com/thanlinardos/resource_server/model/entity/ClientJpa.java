@@ -1,8 +1,8 @@
 package com.thanlinardos.resource_server.model.entity;
 
-import com.thanlinardos.resource_server.misc.convert.UUIDConverter;
 import com.thanlinardos.resource_server.model.entity.base.BasicAuditableJpa;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.converters.UUIDConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

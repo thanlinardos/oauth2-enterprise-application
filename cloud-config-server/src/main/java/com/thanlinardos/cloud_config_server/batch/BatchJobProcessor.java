@@ -1,14 +1,17 @@
 package com.thanlinardos.cloud_config_server.batch;
 
 import com.thanlinardos.cloud_config_server.batch.properties.BatchJobConfig;
-import com.thanlinardos.spring_enterprise_library.utils.BackOffUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.thanlinardos.spring_enterprise_library.math.utils.BackOffUtils;
+import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.event.Level;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
@@ -18,18 +21,16 @@ import java.util.stream.Collectors;
  *
  * @param <C> the type of {@link BatchJobConfig} used for configuring the batch job processor.
  */
-@Slf4j
+@RequiredArgsConstructor
 public abstract class BatchJobProcessor<C extends BatchJobConfig> {
 
-    protected final ThreadPoolTaskScheduler taskScheduler;
-    protected final ConcurrentHashMap<String, Task> scheduledTasks = new ConcurrentHashMap<>();
-    protected final C config;
-    private Task nextExecution;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    @Getter
+    private final ConcurrentHashMap<String, Task> scheduledTasks = new ConcurrentHashMap<>();
+    @Getter
+    private final C config;
 
-    protected BatchJobProcessor(ThreadPoolTaskScheduler taskScheduler, C config) {
-        this.taskScheduler = taskScheduler;
-        this.config = config;
-    }
+    protected abstract Logger getLogger();
 
     /**
      * Start the batch job processor with the following steps:
@@ -39,17 +40,18 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
      * 4. If the execution fails, log the error, forcefully stop all tasks & schedule a retry attempt with exponential backoff.
      */
     public void start() {
+        long start = System.currentTimeMillis();
         cleanUpFinishedTasks();
         try {
-            long nextRunDelay = execute();
-            if (nextRunDelay > 0) {
-                scheduleNextRun(nextRunDelay);
-            }
+            Instant nextRunTime = execute();
+            scheduleNextRun(nextRunTime);
         } catch (Exception e) {
-            log.error("[{}] Failed to execute batch job processor.", config.getName(), e);
+            logJobError("Failed to execute batch job processor.", e);
             stopAllTasks();
             scheduleRunAttempt();
         }
+        long executionTIme = System.currentTimeMillis() - start;
+        logJobInfo("Batch job processor finished in {} ms.", executionTIme);
     }
 
     /**
@@ -57,48 +59,81 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
      *
      * @return the delay in seconds until the next scheduled execution of the batch job processor.
      */
-    protected abstract long execute();
+    protected abstract Instant execute();
 
-    private void scheduleNextRun(long nextRunDelayInSeconds) {
-        nextExecution = scheduleRun(nextRunDelayInSeconds, this::start);
-        log.info("[{}] Scheduled next batch job execution in {} seconds.", config.getName(), nextRunDelayInSeconds);
+    /**
+     * Get the unique name of the batch job.
+     *
+     * @return the name of the batch job.
+     */
+    public String getName() {
+        return config.getName();
     }
 
-    private Task scheduleRun(long nextRunDelayInSeconds, Runnable runnable) {
-        return scheduleTask(nextRunDelayInSeconds, -1, runnable, config.getName());
+    private void scheduleNextRun(Instant nextRunTime) {
+        Instant now = TimeFactory.getInstant();
+        Task nextRun = scheduleAndRegisterRun(nextRunTime, -1, now);
+        long secondsFromNextRun = nextRunTime.getEpochSecond() - now.getEpochSecond();
+        logJobInfo("{} next batch job execution in {} seconds.", getScheduleMsg(nextRun), secondsFromNextRun);
+    }
+
+    private String getScheduleMsg(Task nextRun) {
+        return nextRun.isScheduled() ? "Scheduled" : "Registered in scheduler";
     }
 
     private void scheduleRunAttempt() {
-        int currentAttempt = getCurrentExecutionAttempt();
+        int currentAttempt = getCurrentRunAttempt();
         if (currentAttempt >= config.getMaxExecutionAttempts()) {
-            log.error("[{}] Reached maximum number of retries ({}). Will not attempt to retry the batch job again.", config.getName(), config.getMaxExecutionAttempts());
+            logJobError("Reached maximum number of retries ({}). Will not attempt to retry the batch job again.", config.getMaxExecutionAttempts());
         } else {
             long backoffDelay = getExponentialBackoffDelay(currentAttempt);
-            nextExecution = scheduleTask(backoffDelay, currentAttempt, this::start, config.getName());
-            log.info("[{}] Scheduled retry attempt #{} for batch job execution in {} seconds.", config.getName(), nextExecution.getRetryCount(), backoffDelay);
+            Instant now = TimeFactory.getInstant();
+            Instant nextRunTime = now.plusSeconds(backoffDelay);
+            Task nextRun = scheduleAndRegisterRun(nextRunTime, currentAttempt, now);
+            logJobInfo("{} retry attempt #{} for batch job execution in {} seconds.", getScheduleMsg(nextRun), nextRun.getRetryCount(), backoffDelay);
         }
     }
 
-    private Integer getCurrentExecutionAttempt() {
-        return Optional.ofNullable(nextExecution)
+    private Task scheduleAndRegisterRun(Instant nextRunTime, int currentAttempt, Instant now) {
+        Task nextRun = scheduleRun(nextRunTime, this::start, currentAttempt, now);
+        registerRun(nextRun);
+        return nextRun;
+    }
+
+    private void registerRun(Task jobRun) {
+        BatchJobRunScheduler.getBatchJobExecutions().put(getName(), jobRun);
+    }
+
+    private Task scheduleRun(Instant nextRunTime, Runnable runnable, int currentAttempt, Instant now) {
+        if (nextRunTime.isBefore(now.plusMillis(BatchJobRunScheduler.BATCH_JOB_RUN_SCHEDULER_FREQ))) {
+            return scheduleTask(currentAttempt, runnable, getName(), nextRunTime);
+        } else {
+            return new Task(getName(), currentAttempt + 1, nextRunTime);
+        }
+    }
+
+    private Integer getCurrentRunAttempt() {
+        return Optional.ofNullable(getCurrentRun())
                 .map(Task::getRetryCount)
                 .orElse(0);
     }
 
+    @Nullable
+    private Task getCurrentRun() {
+        return BatchJobRunScheduler.getBatchJobExecutions().get(getName());
+    }
+
     private void stopAllTasks() {
-        scheduledTasks.values()
-                .forEach(task -> task.getScheduledFuture().cancel(true));
+        scheduledTasks.values().stream()
+                .map(Task::getScheduledFuture)
+                .filter(Objects::nonNull)
+                .forEach(future -> future.cancel(true));
         scheduledTasks.clear();
     }
 
-    private Task scheduleTask(long delayInSeconds, int currentAttempt, Runnable runnable, String name) {
-        ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(
-                runnable,
-                Instant.now().plusSeconds(delayInSeconds)
-        );
-        Task task = new Task(name, scheduledFuture);
-        task.setRetryCount(currentAttempt + 1);
-        return task;
+    private Task scheduleTask(int currentAttempt, Runnable runnable, String name, Instant startTime) {
+        ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(runnable, startTime);
+        return new Task(name, scheduledFuture, currentAttempt + 1, startTime);
     }
 
     /**
@@ -111,12 +146,12 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
                 .map(scheduledTasks::remove)
                 .filter(Objects::nonNull)
                 .count();
-        log.info("Cleaned up {} tasks.", numberOfCleanedUpTasks);
+        logJobInfo("Cleaned up {} tasks.", numberOfCleanedUpTasks);
     }
 
     private Set<String> getFinishedTaskNames() {
         return scheduledTasks.values().stream()
-                .filter(Task::isDone)
+                .filter(Task::isNotScheduledOrIsDone)
                 .map(Task::getName)
                 .collect(Collectors.toSet());
     }
@@ -126,11 +161,12 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
      * The tasks that are successfully canceled will be removed from the scheduled tasks map.
      */
     protected void cancelMarkedTasks() {
-        log.trace("scheduled tasks: {}", scheduledTasks);
+        logJobTrace("Scheduled tasks: {}", scheduledTasks);
         scheduledTasks.values().stream()
-                .map(this::cancelTaskIfMarked)
+                .filter(Task::isMarkedForCancellation)
+                .map(this::cancelMarkedTask)
                 .reduce(Integer::sum)
-                .ifPresent(numberOfCanceledTasks -> log.info("Canceled {}/{} tasks.", numberOfCanceledTasks, scheduledTasks.size()));
+                .ifPresent(numberOfCanceledTasks -> logJobInfo("Canceled {}/{} tasks.", numberOfCanceledTasks, scheduledTasks.size()));
     }
 
     /**
@@ -153,52 +189,60 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
      */
     protected void retryFailedTask(Exception e, String taskName, Runnable runnable) {
         Task task = scheduledTasks.get(taskName);
-        log.error("[{}] Failed to execute task {} with error:", taskName, getRetryMsg(task), e);
+        logTaskError(taskName, "Failed to execute task {} with error:", getRetryMsg(task), e);
         Optional.ofNullable(task)
                 .ifPresentOrElse(t -> retryFoundFailedTask(runnable, t),
-                        () -> log.error("Task with name: {} is not found in scheduled tasks. Cannot retry the task.", taskName));
+                        () -> logTaskError(taskName, "Task not found in scheduled tasks. Cannot retry the task."));
     }
 
     private String getRetryMsg(Task task) {
         return Optional.ofNullable(task)
                 .map(Task::getRetryCount)
-                .map(r -> r > 0 ? String.format("after %d retries", r) : "")
+                .filter(r -> r > 0)
+                .map(r -> String.format("after %d retries", r))
                 .orElse("");
     }
 
     private void retryFoundFailedTask(Runnable runnable, Task task) {
         int retryCount = task.getRetryCount();
         if (retryCount >= config.getMaxTaskRetries()) {
-            log.error("[{}] Reached maximum number of retries ({}). Will not attempt to retry the task again.", task.getName(), config.getMaxTaskRetries());
+            logTaskError(task.getName(), "Reached maximum number of retries ({}). Task will not be retried again.", config.getMaxTaskRetries());
             scheduledTasks.remove(task.getName());
         } else {
             long delayInSeconds = getExponentialBackoffDelay(retryCount);
-            rescheduleTask(retryCount, delayInSeconds, runnable, task.getName());
+            Instant startTime = TimeFactory.getInstant().plusSeconds(delayInSeconds);
+            scheduleAndSaveTask(retryCount, runnable, task.getName(), startTime);
         }
     }
 
     /**
      * Reschedule a task as the first attempt.
      *
-     * @param delayInSeconds delay in seconds before executing the task.
      * @param runnable       the {@link Runnable} task to execute.
      * @param taskName       the unique name of the task.
+     * @param startTime      the {@link Instant} to start the task.
      */
-    protected void rescheduleTask(long delayInSeconds, Runnable runnable, String taskName) {
-        rescheduleTask(-1, delayInSeconds, runnable, taskName);
+    protected void rescheduleTask(Runnable runnable, String taskName, Instant startTime) {
+        scheduleAndSaveTask(-1, runnable, taskName, startTime);
     }
 
-    private int cancelTaskIfMarked(Task task) {
-        if (task.isMarkedForCancellation()) {
-            boolean successfullyCanceled = task.getScheduledFuture().cancel(false);
-            if (successfullyCanceled) {
-                scheduledTasks.remove(task.getName());
-                return 1;
-            } else {
-                log.warn("Failed to cancel task with name: {}", task.getName());
-                return 0;
-            }
+    /**
+     * Get the unique name of the task based on the provided arguments.
+     *
+     * @param args the arguments to generate the task name.
+     * @return the unique name of the task.
+     */
+    protected abstract String getTaskName(String... args);
+
+    private int cancelMarkedTask(Task task) {
+        boolean successfullyCanceled = Optional.ofNullable(task.getScheduledFuture())
+                .map(future -> future.cancel(false))
+                .orElse(true);
+        if (successfullyCanceled) {
+            scheduledTasks.remove(task.getName());
+            return 1;
         } else {
+            logTaskWarn(task.getName(), "Failed to cancel task.");
             return 0;
         }
     }
@@ -207,9 +251,37 @@ public abstract class BatchJobProcessor<C extends BatchJobConfig> {
         return BackOffUtils.getExponentialBackoffDelay(retryCount, config.getBackOffStepSize(), config.getMaxDelay());
     }
 
-    private void rescheduleTask(int retryCount, long delayInSeconds, Runnable runnable, String taskName) {
-        Task task = scheduleTask(delayInSeconds, retryCount, runnable, taskName);
+    private void scheduleAndSaveTask(int retryCount, Runnable runnable, String taskName, Instant startTime) {
+        Task task = scheduleTask(retryCount, runnable, taskName, startTime);
         scheduledTasks.put(taskName, task);
+    }
+
+    protected void logJobInfo(String message, Object... args) {
+        logTaskLevel(getName(), message, Level.INFO, args);
+    }
+
+    protected void logJobError(String message, Object... args) {
+        logTaskLevel(getName(), message, Level.ERROR, args);
+    }
+
+    protected void logJobTrace(String message, Object... args) {
+        logTaskLevel(getName(), message, Level.TRACE, args);
+    }
+
+    protected void logTaskInfo(String taskName, String message, Object... args) {
+        logTaskLevel(taskName, message, Level.INFO, args);
+    }
+
+    protected void logTaskError(String taskName, String message, Object... args) {
+        logTaskLevel(taskName, message, Level.ERROR, args);
+    }
+
+    protected void logTaskWarn(String taskName, String message, Object... args) {
+        logTaskLevel(taskName, message, Level.WARN, args);
+    }
+
+    protected void logTaskLevel(String taskName, String message, Level level, Object... args) {
+        getLogger().atLevel(level).log(String.format("[%s] %s", taskName, message), args);
     }
 }
 

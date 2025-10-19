@@ -1,11 +1,13 @@
 package com.thanlinardos.resource_server.service;
 
+import com.thanlinardos.resource_server.SpringTest;
 import com.thanlinardos.resource_server.TestUtils;
 import com.thanlinardos.resource_server.WithMockCustomUser;
 import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
 import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,14 +15,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -28,8 +27,7 @@ import java.util.stream.Stream;
 import static com.thanlinardos.resource_server.TestUtils.*;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
-@SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@SpringTest
 @WithMockCustomUser()
 @Sql(scripts = {"classpath:db/h2/initRoleData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = {"classpath:db/h2/initUserData.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
@@ -55,9 +53,9 @@ class OwnerServiceTest {
                 .customer(TestUtils.buildTestCustomer("test@email.com"))
                 .privilegeLevel(1)
                 .roles(List.of(roleService.findRole(ROLE_USER), roleService.findRole(ROLE_MANAGER), roleService.findRole(ROLE_ADMIN)))
-                .createdAt(LocalDateTime.now())
+                .createdAt(TimeFactory.getDateTime())
                 .createdBy("test")
-                .updatedAt(LocalDateTime.now())
+                .updatedAt(TimeFactory.getDateTime())
                 .updatedBy("test")
                 .build();
         OwnerModel actual = ownerService.save(expected);

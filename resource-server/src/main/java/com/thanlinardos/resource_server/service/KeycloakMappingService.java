@@ -1,6 +1,5 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.misc.utils.DateUtils;
 import com.thanlinardos.resource_server.misc.utils.RoleUtils;
 import com.thanlinardos.resource_server.model.info.Client;
 import com.thanlinardos.resource_server.model.info.Customer;
@@ -10,6 +9,7 @@ import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.resource_server.security.keycloak.KeycloakServiceUtils;
 import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
+import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.thanlinardos.resource_server.misc.utils.DateUtils.getLocalDateFromEpochMilli;
+import static com.thanlinardos.spring_enterprise_library.time.utils.DateUtils.getLocalDateFromEpochMilli;
 
 @Service
 @Slf4j

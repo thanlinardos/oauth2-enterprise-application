@@ -10,6 +10,8 @@ import com.thanlinardos.resource_server.security.keycloak.KeycloakServiceUtils;
 import com.thanlinardos.resource_server.service.KeycloakMappingService;
 import com.thanlinardos.resource_server.service.OwnerService;
 import com.thanlinardos.resource_server.service.userservice.api.UserService;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.OperationType;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.ModelUtils;
 import jakarta.annotation.Nullable;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
@@ -24,9 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.thanlinardos.resource_server.misc.utils.ModelUtils.*;
-import static com.thanlinardos.resource_server.misc.utils.ParserUtil.getPathParameterFromLocationURI;
 import static com.thanlinardos.resource_server.security.keycloak.KeycloakServiceUtils.handleRequest;
+import static com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil.getPathParameterFromLocationURI;
 
 @Slf4j
 public class KeycloakUserService implements UserService {
@@ -142,8 +143,8 @@ public class KeycloakUserService implements UserService {
     public Optional<OwnerModel> getOwnerByIdAndPersistOrUpdate(UUID resourceUuid, OwnerType ownerType) {
         OwnerModel owner = ownerService.getOwnerByUuid(resourceUuid)
                 .orElse(null);
-        Long ownerId = getIdFromModel(owner);
-        Long resourceId = getIdFromNestedModelOr(owner, OwnerModel::getCustomer, OwnerModel::getClient);
+        Long ownerId = ModelUtils.getIdFromModel(owner);
+        Long resourceId = ModelUtils.getIdFromNestedModelOr(owner, OwnerModel::getCustomer, OwnerModel::getClient);
         return switch (ownerType) {
             case CUSTOMER -> Optional.ofNullable(realm.users().get(resourceUuid.toString()))
                     .map(userResource -> mapAndPersistOrUpdateUserResourceToOwnerModel(userResource, ownerId, resourceId));

@@ -4,8 +4,8 @@ import com.thanlinardos.cloud_config_server.batch.properties.TaskExecutionProper
 import com.thanlinardos.cloud_config_server.vault.properties.batch.VaultConnectionProperties;
 import com.thanlinardos.cloud_config_server.vault.properties.batch.VaultSyncJobConfig;
 import com.thanlinardos.spring_enterprise_library.https.SecureHttpRequestFactory;
-import com.thanlinardos.spring_enterprise_library.https.SslContextUtil;
-import com.thanlinardos.spring_enterprise_library.model.properties.KeyAndTrustStoreProperties;
+import com.thanlinardos.spring_enterprise_library.https.properties.KeyAndTrustStoreProperties;
+import com.thanlinardos.spring_enterprise_library.https.utils.SslContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +41,6 @@ public class VaultConfiguration {
     private Resource trustStore;
     @Value("${spring.cloud.config.server.vault.ssl.trust-store-password}")
     private String trustStorePassword;
-    @Value("${kv-data-path}")
-    private String kvDataPath;
     @Value("${spring.application.name}")
     private String configServerName;
     @Value("${batch.vault-sync.backoff-step-size}")
@@ -55,22 +53,22 @@ public class VaultConfiguration {
     private int maxExecutionAttempts;
     @Value("${batch.vault-sync.max-lease-expiry-percent}")
     private int maxLeaseExpiryPercent;
+    @Value("${batch.vault-sync.run-on-startup}")
+    private boolean runOnStartup;
 
     @Bean
     public VaultSyncJob vaultSyncJob(ClientHttpRequestFactory vaultClientRequestFactory, ThreadPoolTaskScheduler taskScheduler) {
         VaultSyncJobConfig config = getVaultSyncJobConfig(vaultClientRequestFactory);
-        VaultSyncJob vaultSyncJob = new VaultSyncJob(taskScheduler, config);
-        vaultSyncJob.start();
-        return vaultSyncJob;
+        return new VaultSyncJob(taskScheduler, config);
     }
 
     private VaultSyncJobConfig getVaultSyncJobConfig(ClientHttpRequestFactory vaultClientRequestFactory) {
         String vaultUrl = String.format(VAULT_URL_FORMAT, scheme, host, port);
         RestTemplate vaultClientRestTemplate = new RestTemplate(vaultClientRequestFactory);
         TaskExecutionProperties taskExecutionProperties = new TaskExecutionProperties(backOffStepSize, maxDelay, maxTaskRetries);
-        VaultConnectionProperties connectionProperties = new VaultConnectionProperties(configServerName, kvDataPath, vaultUrl, token, maxLeaseExpiryPercent);
+        VaultConnectionProperties connectionProperties = new VaultConnectionProperties(configServerName, vaultUrl, token, maxLeaseExpiryPercent);
 
-        return new VaultSyncJobConfig(maxExecutionAttempts, taskExecutionProperties, connectionProperties, vaultClientRestTemplate);
+        return new VaultSyncJobConfig(maxExecutionAttempts, taskExecutionProperties, connectionProperties, vaultClientRestTemplate, runOnStartup);
     }
 
     @Bean

@@ -1,9 +1,8 @@
 package com.thanlinardos.resource_server.model.info;
 
-import com.thanlinardos.resource_server.misc.utils.ParserUtil;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
+import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

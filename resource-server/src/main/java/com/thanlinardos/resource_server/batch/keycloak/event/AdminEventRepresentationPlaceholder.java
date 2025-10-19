@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.batch.keycloak.event;
 
-import com.thanlinardos.resource_server.misc.utils.ParserUtil;
+import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;

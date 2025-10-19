@@ -1,5 +1,6 @@
 package com.thanlinardos.resource_server.service;
 
+import com.thanlinardos.resource_server.CoreTest;
 import com.thanlinardos.resource_server.model.entity.ClientJpa;
 import com.thanlinardos.resource_server.model.entity.OwnerJpa;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
@@ -9,13 +10,11 @@ import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -28,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@CoreTest
 class ClientServiceTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 1, 1, 1);

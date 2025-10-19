@@ -6,22 +6,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.thanlinardos.cloud_config_server.batch.BatchJobProcessor;
+import com.thanlinardos.cloud_config_server.batch.BatchJobRunScheduler;
+import com.thanlinardos.cloud_config_server.batch.Task;
 import com.thanlinardos.cloud_config_server.vault.properties.batch.VaultSyncJobConfig;
 import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.ApplicationEnvironmentProperties;
 import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.ApplicationVaultProperties;
 import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.VaultUpdateCredentialsProperties;
+import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.STR_SLASH_STR_FORMAT;
-import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.X_VAULT_TOKEN_HEADER;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Predicate;
 
 @Slf4j
 public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
@@ -30,6 +33,16 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
 
     public VaultSyncJob(ThreadPoolTaskScheduler taskScheduler, VaultSyncJobConfig config) {
         super(taskScheduler, config);
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return log;
+    }
+
+    @Override
+    protected String getTaskName(String... args) {
+        return VaultIntegrationHelper.getAppEnvName(args[0], args[1]);
     }
 
     /**
@@ -50,29 +63,42 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
      * @return the interval in seconds for the next configuration update, depending on the {@link VaultUpdateCredentialsProperties#updateConfigsInterval()} property.
      */
     @Override
-    protected long execute() {
-        JsonNode kvData = getVaultAppKvData(config.getConfigServerName(), null);
+    protected Instant execute() {
+        JsonNode kvData = getVaultAppKvData(getConfig().getConfigServerName(), null);
         VaultUpdateCredentialsProperties properties = objectMapper.convertValue(kvData, VaultUpdateCredentialsProperties.class);
         markTasksForRemoval(properties);
         cancelMarkedTasks();
 
         properties.applications()
                 .forEach(application -> syncDatabaseCredentialsForApplication(application, properties));
-        return properties.updateConfigsInterval();
+        return getNextRunTime(properties);
+    }
+
+    private Instant getNextRunTime(VaultUpdateCredentialsProperties properties) {
+        Instant nextUpdateConfigsInstant = properties.getNextUpdateConfigsInstant(TimeFactory.getInstant());
+        Instant minTaskRunTime = getScheduledTasks().values().stream()
+                .filter(Predicate.not(Task::isScheduled))
+                .map(Task::getRunTime)
+                .filter(Objects::nonNull)
+                .min(Instant::compareTo)
+                .orElse(nextUpdateConfigsInstant);
+        return nextUpdateConfigsInstant.isBefore(minTaskRunTime) ? nextUpdateConfigsInstant : minTaskRunTime;
     }
 
     private void markTasksForRemoval(VaultUpdateCredentialsProperties properties) {
-        scheduledTasks.values().stream()
+        getScheduledTasks().values().stream()
                 .filter(task -> isApplicationEnvironmentNotInProperties(task.getName(), properties))
                 .forEach(task -> task.setMarkedForCancellation(true));
     }
 
     private JsonNode getVaultAppKvData(String appName, @Nullable String environment) {
-        var kvDataResponse = makeVaultGetRequest(buildAppConfigPath(appName, environment));
-        Object bodyData = Objects.requireNonNull(kvDataResponse.getBody()).get("data");
-        JsonNode kvData = objectMapper.valueToTree(bodyData).get("data");
-        Objects.requireNonNull(kvData);
-        return kvData;
+        var kvDataResponse = makeVaultGetRequest(VaultIntegrationHelper.buildAppConfigPath(appName, environment));
+        return getKvDataJsonFromResponseBody(Objects.requireNonNull(kvDataResponse.getBody()));
+    }
+
+    @Nonnull
+    private JsonNode getKvDataJsonFromResponseBody(Map<String, Object> body) {
+        return objectMapper.valueToTree(body.get("data")).get("data");
     }
 
     private JsonNode readNewCredentialsFromResponse(JsonNode body) {
@@ -83,37 +109,35 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
         return objectMapper.valueToTree(datasourceMap);
     }
 
+    private RestTemplate getRestTemplate() {
+        return getConfig().getRestTemplate();
+    }
+
+    private String getVaultUrl() {
+        return getConfig().getVaultUrl();
+    }
+
+    private String getToken() {
+        return getConfig().getToken();
+    }
+
     private ResponseEntity<Map<String, Object>> makeVaultGetRequest(String path) {
-        HttpHeaders headers = setupVaultHttpHeaders(false);
-        var entity = new HttpEntity<>(headers);
-        return config.getRestTemplate().exchange(buildVaultUrlPath(path), HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+        var entity = VaultIntegrationHelper.setupVaultGetHttpEntity(getToken());
+        String url = VaultIntegrationHelper.buildVaultUrlPath(path, getVaultUrl());
+        return getRestTemplate().exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
         });
     }
 
-    private String buildVaultUrlPath(String path) {
-        return String.format(STR_SLASH_STR_FORMAT, config.getVaultUrl(), path);
-    }
-
     private void updateVaultAppConfiguration(String appName, String environment, JsonNode data) throws JsonProcessingException {
-        HttpHeaders headers = setupVaultHttpHeaders(true);
-        var requestBody = Map.of("data", objectMapper.treeToValue(data, Map.class));
-        var entity = new HttpEntity<>(requestBody, headers);
-        config.getRestTemplate().exchange(buildVaultUrlPath(buildAppConfigPath(appName, environment)), HttpMethod.POST, entity, Map.class);
+        var entity = setupHttpEntityWithData(data, getToken());
+        String url = VaultIntegrationHelper.buildVaultUrlPath(appName, environment, getVaultUrl());
+        getRestTemplate().exchange(url, HttpMethod.POST, entity, Map.class);
     }
 
-    private String buildAppConfigPath(String appName, @Nullable String environment) {
-        return Optional.ofNullable(environment)
-                .map(env -> String.format("%s/%s/%s", config.getKvDataPath(), appName, env))
-                .orElse(String.format(STR_SLASH_STR_FORMAT, config.getKvDataPath(), appName));
-    }
-
-    private HttpHeaders setupVaultHttpHeaders(boolean modifying) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(X_VAULT_TOKEN_HEADER, config.getToken());
-        if (modifying) {
-            headers.setContentType(MediaType.APPLICATION_JSON);
-        }
-        return headers;
+    private HttpEntity<Map<String, Map<?, ?>>> setupHttpEntityWithData(JsonNode data, String token) throws JsonProcessingException {
+        HttpHeaders headers = VaultIntegrationHelper.setupVaultHttpHeaders(true, token);
+        var body = Map.<String, Map<?, ?>>of("data", objectMapper.treeToValue(data, Map.class));
+        return new HttpEntity<>(body, headers);
     }
 
     private boolean isApplicationEnvironmentNotInProperties(String name, VaultUpdateCredentialsProperties properties) {
@@ -123,38 +147,30 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
 
     private boolean hasApplicationEnvironment(String name, ApplicationVaultProperties application) {
         return application.environments().stream()
-                .anyMatch(environment -> getAppEnvName(application.name(), environment.name()).equals(name));
+                .anyMatch(environment -> getTaskName(application.name(), environment.name()).equals(name));
     }
 
     private void syncDatabaseCredentialsForApplication(ApplicationVaultProperties application, VaultUpdateCredentialsProperties properties) {
         application.environments().stream()
-                .filter(environment -> isEnvironmentSelected(environment, properties))
+                .filter(properties::isEnvironmentToSync)
                 .filter(environment -> isSyncNotScheduledForEnvironment(application, environment))
-                .forEach(environment -> syncDbCredentialsForAppEnvWithRetry(application.name(), environment));
+                .forEach(environment -> syncDbCredentialsForAppEnvWithRetry(application.name(), environment, false));
     }
 
     private boolean isSyncNotScheduledForEnvironment(ApplicationVaultProperties application, ApplicationEnvironmentProperties environment) {
-        String taskName = getAppEnvName(application.name(), environment.name());
+        String taskName = getTaskName(application.name(), environment.name());
         return isTaskNotScheduled(taskName);
     }
 
-    private String getAppEnvName(String application, String environment) {
-        return String.format(STR_SLASH_STR_FORMAT, application, environment);
-    }
-
-    private boolean isEnvironmentSelected(ApplicationEnvironmentProperties environment, VaultUpdateCredentialsProperties properties) {
-        return properties.syncAllEnvironments() || properties.environmentsToSync().contains(environment.name());
-    }
-
-    private void syncDbCredentialsForAppEnvWithRetry(String appName, ApplicationEnvironmentProperties environment) {
+    private void syncDbCredentialsForAppEnvWithRetry(String appName, ApplicationEnvironmentProperties environment, boolean isRetry) {
         try {
-            syncDbCredentialsForAppEnv(appName, environment);
+            syncDbCredentialsForAppEnv(appName, environment, isRetry);
         } catch (Exception e) {
-            retryFailedTask(e, getAppEnvName(appName, environment.name()), () -> syncDbCredentialsForAppEnvWithRetry(appName, environment));
+            retryFailedTask(e, getTaskName(appName, environment.name()), () -> syncDbCredentialsForAppEnvWithRetry(appName, environment, true));
         }
     }
 
-    private void syncDbCredentialsForAppEnv(String appName, ApplicationEnvironmentProperties environment) throws JsonPatchException, JsonProcessingException {
+    private void syncDbCredentialsForAppEnv(String appName, ApplicationEnvironmentProperties environment, boolean isRetry) throws JsonPatchException, JsonProcessingException {
         var response = makeVaultGetRequest("database/creds/" + environment.role());
         var body = objectMapper.valueToTree(Objects.requireNonNull(response.getBody()));
         JsonNode newDataSourceCredentials = readNewCredentialsFromResponse(body);
@@ -163,12 +179,49 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
         // Store credentials in KV store secret for the specified application-environment, after merging with existing data
         JsonNode kvData = getVaultAppKvData(appName, environment.name());
         JsonNode mergedKvData = JsonMergePatch.fromJson(newDataSourceCredentials).apply(kvData);
-        updateVaultAppConfiguration(appName, environment.name(), mergedKvData);
-        log.info("[{}/{}] Updated Vault KV with new database credentials.", appName, environment.name());
+        String taskName = getTaskName(appName, environment.name());
+        boolean isKvDataChanged = !mergedKvData.equals(kvData);
+        if (isKvDataChanged && isRetryOrNotScheduledForRetry(taskName, isRetry)) {
+            updateVaultAppConfiguration(appName, environment.name(), mergedKvData);
+            logTaskInfo(appName, environment.name(), "Updated Vault KV with new database credentials.");
+            scheduleNextCredentialsUpdate(appName, environment, leaseDuration, taskName);
+        } else if (!isKvDataChanged) {
+            logTaskInfo(appName, environment.name(), "Skipping task as there are no changes in database credentials.");
+        } else {
+            logTaskInfo(appName, environment.name(), "Skipping task as it is already scheduled for retry.");
+        }
+    }
 
-        // Dynamically schedule the next update before lease expiry (90% of lease duration)
-        long refreshTime = (long) (leaseDuration * (config.getMaxLeaseExpiryPercent() / 100.0));
-        log.info("[{}/{}] Next credential refresh scheduled in {} seconds.", appName, environment.name(), refreshTime);
-        rescheduleTask(refreshTime, () -> syncDbCredentialsForAppEnvWithRetry(appName, environment), getAppEnvName(appName, environment.name()));
+    private void logTaskInfo(String appName, String envName, String message) {
+        logTaskInfo(getTaskName(appName, envName), message);
+    }
+
+    private void scheduleNextCredentialsUpdate(String appName, ApplicationEnvironmentProperties environment, int leaseDuration, String taskName) {
+        long refreshTime = calculateRefreshTime(leaseDuration);
+        Instant startTime = TimeFactory.getInstant().plusSeconds(refreshTime);
+        if (isOutsideSchedulingWindow(refreshTime)) {
+            getScheduledTasks().put(taskName, Task.forRegister(taskName, startTime));
+        } else {
+            rescheduleTask(() -> syncDbCredentialsForAppEnvWithRetry(appName, environment, false), taskName, startTime);
+        }
+        logTaskInfo(taskName, "Next credential refresh scheduled in {} seconds.", refreshTime);
+    }
+
+    private long calculateRefreshTime(int leaseDuration) {
+        return (long) (leaseDuration * (getConfig().getMaxLeaseExpiryPercent() / 100.0));
+    }
+
+    private boolean isOutsideSchedulingWindow(long refreshTime) {
+        return refreshTime > BatchJobRunScheduler.SCHEDULING_WINDOW_SECONDS;
+    }
+
+    private boolean isRetryOrNotScheduledForRetry(String taskName, boolean isRetry) {
+        return isRetry || isTaskNotScheduledForRetry(taskName);
+    }
+
+    private boolean isTaskNotScheduledForRetry(String taskName) {
+        return Optional.ofNullable(getScheduledTasks().get(taskName))
+                .filter(Task::isScheduledRetry)
+                .isEmpty();
     }
 }

@@ -1,6 +1,7 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
 import com.thanlinardos.resource_server.model.entity.AccountJpa;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

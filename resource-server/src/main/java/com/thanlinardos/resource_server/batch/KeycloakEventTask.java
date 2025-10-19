@@ -112,11 +112,7 @@ public class KeycloakEventTask {
 
     private void handleEvent(EventRepresentationPlaceholder event) {
         switch (event.getType()) {
-            case REGISTER -> getGuestOwnerByEmailAndPersist(event)
-                    .ifPresentOrElse(
-                            e -> logEvent(Level.INFO, event, "Registered guest user with email", e),
-                            () -> logEvent(Level.ERROR, event, "Failed to register guest user", event.getDetails().get(EMAIL))
-                    );
+            case REGISTER -> getGuestOwnerByEmailAndPersist(event);
             case UPDATE_TOTP, SEND_VERIFY_EMAIL ->
                     userService.getOwnerByIdAndPersistOrUpdate(UUID.fromString(event.getUserId()), OwnerType.CUSTOMER)
                             .ifPresentOrElse(
@@ -128,11 +124,16 @@ public class KeycloakEventTask {
         }
     }
 
-    private Optional<String> getGuestOwnerByEmailAndPersist(EventRepresentationPlaceholder event) {
-        if (ownerService.getOwnerByPrincipalName(event.getDetails().get(EMAIL)).isPresent()) {
-            return Optional.empty();
+    private void getGuestOwnerByEmailAndPersist(EventRepresentationPlaceholder event) {
+        if (ownerService.ownerExistsByPrincipalName(event.getDetails().get(EMAIL))) {
+            logEvent(Level.ERROR, event, "Failed to register guest user. A user already exists with email", event.getDetails().get(EMAIL));
+        } else {
+        userService.getGuestOwnerByEmailAndPersist(event.getDetails().get(EMAIL))
+                .ifPresentOrElse(
+                        e -> logEvent(Level.INFO, event, "Registered guest user with email", e),
+                        () -> logEvent(Level.ERROR, event, "Failed to register guest user", event.getDetails().get(EMAIL))
+                );
         }
-        return userService.getGuestOwnerByEmailAndPersist(event.getDetails().get(EMAIL));
     }
 
     private AdminEventRepresentationPlaceholder tryHandleAdminEvent(AdminEventRepresentationPlaceholder event) {

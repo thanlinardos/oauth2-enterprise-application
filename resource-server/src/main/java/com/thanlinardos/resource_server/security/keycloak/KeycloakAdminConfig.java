@@ -1,10 +1,10 @@
 package com.thanlinardos.resource_server.security.keycloak;
 
-import com.thanlinardos.spring_enterprise_library.model.properties.KeyAndTrustStoreProperties;
 import com.thanlinardos.resource_server.model.properties.keycloak.KeycloakClientProperties;
 import com.thanlinardos.resource_server.model.properties.keycloak.KeycloakProperties;
 import com.thanlinardos.spring_enterprise_library.https.SecureHttpRequestFactory;
-import com.thanlinardos.spring_enterprise_library.https.SslContextUtil;
+import com.thanlinardos.spring_enterprise_library.https.properties.KeyAndTrustStoreProperties;
+import com.thanlinardos.spring_enterprise_library.https.utils.SslContextUtil;
 import jakarta.ws.rs.client.ClientBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;

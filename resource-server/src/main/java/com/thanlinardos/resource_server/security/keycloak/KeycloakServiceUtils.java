@@ -1,10 +1,11 @@
 package com.thanlinardos.resource_server.security.keycloak;
 
-import com.thanlinardos.resource_server.misc.exception.KeycloakException;
-import com.thanlinardos.resource_server.misc.utils.ParserUtil;
 import com.thanlinardos.resource_server.model.info.*;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
+import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.exception.KeycloakException;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.OperationType;
 import jakarta.annotation.Nullable;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;

@@ -1,8 +1,8 @@
 package com.thanlinardos.resource_server.model.entity;
 
-import com.thanlinardos.resource_server.misc.utils.EntityUtils;
 import com.thanlinardos.resource_server.model.entity.base.BasicOneToOneOwnedAuditableJpa;
 import com.thanlinardos.resource_server.model.mapped.AccountModel;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

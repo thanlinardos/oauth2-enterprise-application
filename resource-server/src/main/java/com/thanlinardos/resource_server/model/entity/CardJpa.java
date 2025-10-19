@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import static com.thanlinardos.resource_server.misc.utils.EntityUtils.buildEntityWithIdOrNull;
+import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.EntityUtils.buildEntityWithIdOrNull;
 
 @Entity
 @Table(name = "cards")

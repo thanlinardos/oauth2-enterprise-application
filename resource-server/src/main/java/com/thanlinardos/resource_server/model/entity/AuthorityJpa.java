@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity;
 
-import com.thanlinardos.resource_server.model.entity.base.BasicIdJpa;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
 import com.thanlinardos.resource_server.model.mapped.AuthorityModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.AccessType;
 import jakarta.annotation.Nullable;

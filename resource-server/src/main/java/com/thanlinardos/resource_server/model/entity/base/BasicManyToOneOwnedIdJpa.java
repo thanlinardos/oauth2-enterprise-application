@@ -1,6 +1,7 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
 import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

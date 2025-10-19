@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.misc.utils.DateUtils;
 import com.thanlinardos.resource_server.model.info.TaskType;
+import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

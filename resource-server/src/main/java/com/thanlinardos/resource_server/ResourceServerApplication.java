@@ -1,6 +1,5 @@
 package com.thanlinardos.resource_server;
 
-import com.thanlinardos.resource_server.model.mapped.OwnerModel;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.resource_server.service.UserRoleCacheService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
