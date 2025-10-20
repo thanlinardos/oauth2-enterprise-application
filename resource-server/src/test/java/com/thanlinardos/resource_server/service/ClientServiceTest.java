@@ -1,10 +1,10 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.CoreTest;
 import com.thanlinardos.resource_server.model.entity.ClientJpa;
 import com.thanlinardos.resource_server.model.entity.OwnerJpa;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
 import com.thanlinardos.resource_server.service.userservice.api.UserService;
+import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Assertions;

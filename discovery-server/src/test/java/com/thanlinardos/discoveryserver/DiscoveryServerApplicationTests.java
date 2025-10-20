@@ -1,8 +1,8 @@
 package com.thanlinardos.discoveryserver;
 
+import com.thanlinardos.spring_enterprise_library.annotations.SpringTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringTest
 class DiscoveryServerApplicationTests {

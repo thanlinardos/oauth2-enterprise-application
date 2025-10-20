@@ -5,7 +5,6 @@ import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -137,7 +136,7 @@ public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser>
         return context;
     }
 
-    private static @NotNull Stream<GrantedAuthority> getGrantedAuthorityStreamIncludingRoleName(RoleModel role) {
+    private static Stream<GrantedAuthority> getGrantedAuthorityStreamIncludingRoleName(RoleModel role) {
         return switch (role.getName()) {
             case ROLE_USER -> Arrays.stream(USER_AUTHORITIES);
             case ROLE_MANAGER -> Arrays.stream(MANAGER_AUTHORITIES);

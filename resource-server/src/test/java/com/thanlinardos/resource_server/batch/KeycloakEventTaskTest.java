@@ -2,11 +2,11 @@ package com.thanlinardos.resource_server.batch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thanlinardos.resource_server.CoreTest;
 import com.thanlinardos.resource_server.batch.keycloak.event.AdminEventRepresentationPlaceholder;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.resource_server.service.TaskRunService;
 import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.AdminEventRepresentation;

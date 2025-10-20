@@ -1,12 +1,12 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.SpringTest;
 import com.thanlinardos.resource_server.TestUtils;
 import com.thanlinardos.resource_server.WithMockCustomUser;
 import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
 import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.spring_enterprise_library.annotations.SpringTest;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Assertions;
