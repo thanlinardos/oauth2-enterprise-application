@@ -1,11 +1,10 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.model.entity.AuthorityJpa;
-import com.thanlinardos.resource_server.model.entity.RoleJpa;
 import com.thanlinardos.resource_server.model.mapped.AuthorityModel;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
+import com.thanlinardos.resource_server.repository.api.AuthorityRepository;
+import com.thanlinardos.resource_server.repository.api.RoleRepository;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -18,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserRoleCacheService {
 
-    private final EntityManager entityManager;
+    private final RoleRepository roleRepository;
+    private final AuthorityRepository authorityRepository;
 
     @Transactional(readOnly = true)
     @Cacheable(value = "roles")
     public Collection<RoleModel> getAllRoles() {
-        return entityManager.createQuery("from RoleJpa r join fetch r.authorities", RoleJpa.class)
-                .getResultStream()
+        return roleRepository.findAll().stream()
                 .map(RoleModel::new)
                 .toList();
     }
@@ -32,7 +31,7 @@ public class UserRoleCacheService {
     @Transactional(readOnly = true)
     @Cacheable(value = "authorities")
     public List<Authority> getAllAuthorities() {
-        return entityManager.createQuery("from AuthorityJpa", AuthorityJpa.class).getResultStream()
+        return authorityRepository.findAll().stream()
                 .map(AuthorityModel::new)
                 .map(Authority.class::cast)
                 .toList();
