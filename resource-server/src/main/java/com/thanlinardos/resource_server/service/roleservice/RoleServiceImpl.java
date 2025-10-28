@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -24,7 +23,6 @@ public class RoleServiceImpl implements OauthRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RoleModel findRole(String name) {
         return getAllRoles().stream()
                 .filter(role -> role.getRole().equals(name))
@@ -33,7 +31,6 @@ public class RoleServiceImpl implements OauthRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Collection<RoleModel> findRoles(Collection<String> names) {
         return getAllRoles().stream()
                 .filter(role -> names.contains(role.getName()))
@@ -41,7 +38,6 @@ public class RoleServiceImpl implements OauthRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public int getPrivilegeLevelFromRoleNames(Collection<String> names) {
         return getAllRoles().stream()
                 .filter(role -> names.contains(role.getName()))
@@ -58,7 +54,6 @@ public class RoleServiceImpl implements OauthRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Collection<GrantedAuthority> findGrantedAuthoritiesWithRoles(Collection<String> roleNames) {
         return getAllRoles().stream()
                 .filter(role -> roleNames.contains(role.getName()))

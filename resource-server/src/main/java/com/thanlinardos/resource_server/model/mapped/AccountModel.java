@@ -5,7 +5,7 @@ import com.thanlinardos.resource_server.model.OwnedResource;
 import com.thanlinardos.resource_server.model.entity.AccountJpa;
 import com.thanlinardos.resource_server.model.entity.AccountTransactionJpa;
 import com.thanlinardos.resource_server.model.entity.CardJpa;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.mapped.base.BasicIdModel;
+import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

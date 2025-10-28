@@ -16,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Aspect
 @Component
@@ -37,6 +36,7 @@ public class EventTaskServiceAuthAspect {
         return roleService.getAllAuthorities().stream()
                 .map(Authority::getName)
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .map(GrantedAuthority.class::cast)
+                .toList();
     }
 }

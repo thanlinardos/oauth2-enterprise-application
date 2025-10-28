@@ -9,7 +9,7 @@
         <version>3.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.thanlinardos.cloud_config_server</groupId>
+    <groupId>io.github.thanlinardos.cloud_config_server</groupId>
     <artifactId>cloud-config-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>cloud-config-server</name>
@@ -48,14 +48,14 @@
             <version>1.13</version>
         </dependency>
         <dependency>
-            <groupId>com.thanlinardos</groupId>
+            <groupId>io.github.thanlinardos</groupId>
             <artifactId>httpsclient</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.thanlinardos</groupId>
+            <groupId>io.github.thanlinardos</groupId>
             <artifactId>httpsclient</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

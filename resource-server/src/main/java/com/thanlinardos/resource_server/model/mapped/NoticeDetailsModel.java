@@ -2,7 +2,7 @@ package com.thanlinardos.resource_server.model.mapped;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.thanlinardos.resource_server.model.entity.NoticeDetailsJpa;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.mapped.base.BasicIdModel;
+import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,8 @@
 package com.thanlinardos.resource_server.model.mapped.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.mapped.base.BasicIdModel;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
+import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import com.thanlinardos.resource_server.model.entity.base.BasicOwnedEntity;
 import com.thanlinardos.resource_server.model.OwnedResource;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;

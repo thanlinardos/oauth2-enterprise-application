@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity;
 
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +31,7 @@ public class RoleJpa extends BasicIdJpa {
     @Builder.Default
     private List<OwnerJpa> owners = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_authorities",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))

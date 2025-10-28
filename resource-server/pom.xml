@@ -8,7 +8,7 @@
         <version>3.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.thanlinardos</groupId>
+    <groupId>io.github.thanlinardos</groupId>
     <artifactId>resource-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>resource-server</name>
@@ -34,21 +34,17 @@
         <spring-cloud.version>2025.0.0</spring-cloud.version>
         <lombok.version>1.18.40</lombok.version>
 
-        <sonar.dependencyCheck.basePath>
-            ${project.basedir}/owasp-dependency-check-logs
-        </sonar.dependencyCheck.basePath>
-        <sonar.dependencyCheck.htmlReportPath>
-            ${sonar.dependencyCheck.basePath}/dependency-check-report.html
-        </sonar.dependencyCheck.htmlReportPath>
-        <sonar.dependencyCheck.jsonReportPath>
-            ${sonar.dependencyCheck.basePath}/dependency-check-report.json
-        </sonar.dependencyCheck.jsonReportPath>
-        <sonar.dependencyCheck.summarize>true</sonar.dependencyCheck.summarize>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.language>java</sonar.language>
 
+        <sonar.dependencyCheck.basePath>${project.basedir}/owasp-dependency-check-logs</sonar.dependencyCheck.basePath>
+        <sonar.dependencyCheck.htmlReportPath>${sonar.dependencyCheck.basePath}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+        <sonar.dependencyCheck.jsonReportPath>${sonar.dependencyCheck.basePath}/dependency-check-report.json</sonar.dependencyCheck.jsonReportPath>
+        <sonar.dependencyCheck.summarize>true</sonar.dependencyCheck.summarize>
         <sonar.coverage.exclusions>**/controller/debug/**/*, mavenSonarBuild.sh, owasp-dependency-check-logs/**,
             src/main/resources/static/assets/css
         </sonar.coverage.exclusions>
-
         <sonar.exclusions>src/test/**/*, src/main/resources/static/assets/css</sonar.exclusions>
         <sonar.sources>src,pom.xml</sonar.sources>
         <sonar.test.inclusions>src/test/**/*</sonar.test.inclusions>
@@ -56,14 +52,14 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.thanlinardos</groupId>
+            <groupId>io.github.thanlinardos</groupId>
             <artifactId>spring-cloud-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.thanlinardos</groupId>
+            <groupId>io.github.thanlinardos</groupId>
             <artifactId>httpsclient</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -388,6 +384,37 @@
                                 <goals>
                                     <goal>aggregate</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.7</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <formats>
+                                        <format>XML</format>
+                                    </formats>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
