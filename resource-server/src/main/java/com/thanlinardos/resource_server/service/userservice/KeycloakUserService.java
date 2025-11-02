@@ -1,7 +1,10 @@
 package com.thanlinardos.resource_server.service.userservice;
 
 import com.thanlinardos.resource_server.model.constants.SecurityConstants;
-import com.thanlinardos.resource_server.model.info.*;
+import com.thanlinardos.resource_server.model.info.Client;
+import com.thanlinardos.resource_server.model.info.Customer;
+import com.thanlinardos.resource_server.model.info.OwnerType;
+import com.thanlinardos.resource_server.model.info.RegisterCustomerDetails;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
@@ -18,12 +21,23 @@ import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.resource.*;
-import org.keycloak.representations.idm.*;
+import org.keycloak.admin.client.resource.ClientResource;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.AbstractUserRepresentation;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.thanlinardos.resource_server.security.keycloak.KeycloakServiceUtils.handleRequest;
@@ -201,7 +215,6 @@ public class KeycloakUserService implements UserService {
         return getUserResourceByEmail(email)
                 .map(keycloakMappingService::mapUserResourceToCustomer);
     }
-
 
     private String mapAndPersistGuestUserResourceToOwnerModel(UserResource userResource) {
         OwnerModel owner = keycloakMappingService.mapUserResourceToOwnerModel(userResource);

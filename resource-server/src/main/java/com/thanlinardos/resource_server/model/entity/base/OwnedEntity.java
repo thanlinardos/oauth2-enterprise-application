@@ -6,6 +6,7 @@ import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.ba
 public interface OwnedEntity<T extends OwnedEntity<T>> extends PrivilegedResource {
 
     OwnerJpa getOwner();
+
     void setOwner(OwnerJpa owner);
 
     @SuppressWarnings("unchecked")

@@ -3,7 +3,6 @@ package com.thanlinardos.cloud_config_server.batch;
 import com.thanlinardos.cloud_config_server.batch.properties.BatchJobRegistration;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import com.thanlinardos.spring_enterprise_library.time.model.InstantInterval;
-import com.thanlinardos.spring_enterprise_library.time.utils.InstantUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -18,9 +17,16 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Schedules batch job runs based on their configuration and execution status:
+ * <p>
+ *  - Maintains a map of currently scheduled and completed job runs.
+ *  <p>
+ *  - Runs periodically and schedules new job runs within a defined scheduling window.
+ */
 @Component
 @Slf4j
-public class BatchJobRunScheduler {
+public final class BatchJobRunScheduler {
 
     public static final int BATCH_JOB_RUN_SCHEDULER_FREQ = 5000;
     public static final int SCHEDULING_WINDOW_SECONDS = 120;

@@ -22,7 +22,8 @@ public class KeycloakUser implements Serializable {
     private UUID id;
     @NotBlank
     private String username;
-    @NotBlank @Email
+    @NotBlank
+    @Email
     private String email;
     @Builder.Default
     private boolean emailVerified = false;

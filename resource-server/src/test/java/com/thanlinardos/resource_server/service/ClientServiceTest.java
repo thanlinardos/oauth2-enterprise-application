@@ -32,10 +32,8 @@ class ClientServiceTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 1, 1, 1);
 
-    @Mock
-    private EntityManager entityManager;
-    @Mock
-    private UserService userService;
+    @Mock private EntityManager entityManager;
+    @Mock private UserService userService;
 
     @InjectMocks
     private ClientService clientService;

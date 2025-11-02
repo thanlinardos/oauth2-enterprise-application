@@ -17,7 +17,7 @@ public class CloudClientConfigRefreshComponent {
         this.contextRefresher = (CustomConfigDataContextRefresher) configDataContextRefresher;
     }
 
-    @Scheduled(initialDelayString="${secrets.refresh-interval-ms}", fixedDelayString = "${secrets.refresh-interval-ms}")
+    @Scheduled(initialDelayString = "${secrets.refresh-interval-ms}", fixedDelayString = "${secrets.refresh-interval-ms}")
     void refresher() {
         Object props = contextRefresher.customRefresh();
         log.info("Refreshed the following props: {}", props);

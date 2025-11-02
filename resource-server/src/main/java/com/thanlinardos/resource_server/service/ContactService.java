@@ -30,6 +30,7 @@ public class ContactService {
     @Getter
     @Setter
     private int counter = 0;
+
     /**
      * Save Contact Details into DB
      *

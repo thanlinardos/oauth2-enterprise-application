@@ -22,13 +22,10 @@ import java.util.UUID;
 @CoreTest
 class KeycloakEventTaskTest {
 
-    @Spy
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Spy private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Mock
-    private TaskRunService taskRunService;
-    @Mock
-    private OauthRoleService roleService;
+    @Mock private TaskRunService taskRunService;
+    @Mock private OauthRoleService roleService;
 
     @InjectMocks
     private KeycloakEventTask keycloakEventTask;

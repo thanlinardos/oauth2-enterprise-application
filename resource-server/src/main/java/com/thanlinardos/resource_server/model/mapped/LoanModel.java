@@ -2,7 +2,8 @@ package com.thanlinardos.resource_server.model.mapped;
 
 import com.thanlinardos.resource_server.model.entity.LoanJpa;
 import com.thanlinardos.resource_server.model.mapped.base.BasicOwnedIdModel;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;

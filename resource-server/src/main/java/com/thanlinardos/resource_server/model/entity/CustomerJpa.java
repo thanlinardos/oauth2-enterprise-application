@@ -2,9 +2,14 @@ package com.thanlinardos.resource_server.model.entity;
 
 import com.thanlinardos.resource_server.model.entity.base.BasicAuditableJpa;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Builder.Default;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity

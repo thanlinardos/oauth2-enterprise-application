@@ -32,12 +32,12 @@ public class ContactsController {
 
     @PostMapping(value = "/saveMsg")
     public String saveMessage(@Valid @ModelAttribute("contact") Contact contact, Errors errors) {
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             log.error("Contact form validation failed due to : {}", errors);
             return CONTACT;
         }
         contactService.saveMessageDetails(contact);
-        contactService.setCounter(contactService.getCounter()+1);
+        contactService.setCounter(contactService.getCounter() + 1);
         log.info("Number of times the Contact form is submitted : {}", contactService.getCounter());
         return "redirect:/contacts";
     }

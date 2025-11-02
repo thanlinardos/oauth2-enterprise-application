@@ -1,6 +1,5 @@
 package com.thanlinardos.resource_server.model.properties.keycloak;
 
-
 import com.thanlinardos.spring_enterprise_library.https.properties.KeyAndTrustStoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

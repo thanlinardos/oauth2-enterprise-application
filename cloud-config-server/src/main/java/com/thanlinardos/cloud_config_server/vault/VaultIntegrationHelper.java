@@ -7,7 +7,10 @@ import org.springframework.http.MediaType;
 
 import java.util.Optional;
 
-import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.*;
+import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.KV_DATA_PATH;
+import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.STR_SLASH_STR_FORMAT;
+import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.TRIPLE_STR_SLASH_FORMAT;
+import static com.thanlinardos.cloud_config_server.vault.VaultIntegrationConstants.X_VAULT_TOKEN_HEADER;
 
 public class VaultIntegrationHelper {
 

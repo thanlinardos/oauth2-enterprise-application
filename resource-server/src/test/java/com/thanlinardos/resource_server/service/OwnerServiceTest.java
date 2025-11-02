@@ -24,7 +24,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.thanlinardos.resource_server.TestUtils.*;
+import static com.thanlinardos.resource_server.TestUtils.ROLE_ADMIN;
+import static com.thanlinardos.resource_server.TestUtils.ROLE_MANAGER;
+import static com.thanlinardos.resource_server.TestUtils.ROLE_OWNER;
+import static com.thanlinardos.resource_server.TestUtils.ROLE_USER;
+import static com.thanlinardos.resource_server.TestUtils.buildRole;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 @SpringTest
@@ -103,7 +107,7 @@ class OwnerServiceTest {
     }
 
     private static void assertThatOwnerEqualsOrNull(@Nullable OwnerModel expected, @Nullable OwnerModel actual) {
-        if(expected == null) {
+        if (expected == null) {
             Assertions.assertNull(actual);
         } else {
             assertThatOwnerEquals(expected, actual);

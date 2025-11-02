@@ -11,10 +11,11 @@ import java.util.List;
 
 @JsonTypeName("update-vault-db-credentials")
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-public record VaultUpdateCredentialsProperties(@JsonProperty("applications") List<ApplicationVaultProperties> applications,
-                                               @JsonProperty("environments-to-sync") List<String> environmentsToSync,
-                                               @JsonProperty("sync-all-environments") boolean syncAllEnvironments,
-                                               @JsonProperty("update-configurations-interval-in-seconds") long updateConfigsInterval)  implements Serializable {
+public record VaultUpdateCredentialsProperties(
+        @JsonProperty("applications") List<ApplicationVaultProperties> applications,
+        @JsonProperty("environments-to-sync") List<String> environmentsToSync,
+        @JsonProperty("sync-all-environments") boolean syncAllEnvironments,
+        @JsonProperty("update-configurations-interval-in-seconds") long updateConfigsInterval) implements Serializable {
 
     @JsonIgnore
     public boolean isEnvironmentToSync(ApplicationEnvironmentProperties environment) {

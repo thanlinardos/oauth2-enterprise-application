@@ -18,12 +18,17 @@ import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -92,7 +97,7 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
     }
 
     private JsonNode getVaultAppKvData(String appName, @Nullable String environment) {
-        var kvDataResponse = makeVaultGetRequest(VaultIntegrationHelper.buildAppConfigPath(appName, environment));
+        ResponseEntity<Map<String, Object>> kvDataResponse = makeVaultGetRequest(VaultIntegrationHelper.buildAppConfigPath(appName, environment));
         return getKvDataJsonFromResponseBody(Objects.requireNonNull(kvDataResponse.getBody()));
     }
 
@@ -122,21 +127,21 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
     }
 
     private ResponseEntity<Map<String, Object>> makeVaultGetRequest(String path) {
-        var entity = VaultIntegrationHelper.setupVaultGetHttpEntity(getToken());
+        HttpEntity<Object> entity = VaultIntegrationHelper.setupVaultGetHttpEntity(getToken());
         String url = VaultIntegrationHelper.buildVaultUrlPath(path, getVaultUrl());
         return getRestTemplate().exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
         });
     }
 
     private void updateVaultAppConfiguration(String appName, String environment, JsonNode data) throws JsonProcessingException {
-        var entity = setupHttpEntityWithData(data, getToken());
+        HttpEntity<Map<String, Map<?, ?>>> entity = setupHttpEntityWithData(data, getToken());
         String url = VaultIntegrationHelper.buildVaultUrlPath(appName, environment, getVaultUrl());
         getRestTemplate().exchange(url, HttpMethod.POST, entity, Map.class);
     }
 
     private HttpEntity<Map<String, Map<?, ?>>> setupHttpEntityWithData(JsonNode data, String token) throws JsonProcessingException {
         HttpHeaders headers = VaultIntegrationHelper.setupVaultHttpHeaders(true, token);
-        var body = Map.<String, Map<?, ?>>of("data", objectMapper.treeToValue(data, Map.class));
+        Map<String, Map<?, ?>> body = Map.of("data", objectMapper.treeToValue(data, Map.class));
         return new HttpEntity<>(body, headers);
     }
 
@@ -171,8 +176,8 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
     }
 
     private void syncDbCredentialsForAppEnv(String appName, ApplicationEnvironmentProperties environment, boolean isRetry) throws JsonPatchException, JsonProcessingException {
-        var response = makeVaultGetRequest("database/creds/" + environment.role());
-        var body = objectMapper.valueToTree(Objects.requireNonNull(response.getBody()));
+        ResponseEntity<Map<String, Object>> response = makeVaultGetRequest("database/creds/" + environment.role());
+        JsonNode body = objectMapper.valueToTree(Objects.requireNonNull(response.getBody()));
         JsonNode newDataSourceCredentials = readNewCredentialsFromResponse(body);
         int leaseDuration = Objects.requireNonNull(body.get("lease_duration")).asInt();
 

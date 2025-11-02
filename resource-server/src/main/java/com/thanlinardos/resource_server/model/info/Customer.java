@@ -1,13 +1,16 @@
 package com.thanlinardos.resource_server.model.info;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,7 +18,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Customer extends OwnerDetailsInfo implements Serializable {
 
-    @Email @NotBlank
+    @Email
+    @NotBlank
     private String email;
     @Digits(integer = 10, fraction = 0)
     private String mobileNumber;

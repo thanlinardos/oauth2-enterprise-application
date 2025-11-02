@@ -10,7 +10,11 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class CustomConfigDataContextRefresher extends ConfigDataContextRefresher {
 
@@ -79,8 +83,7 @@ public class CustomConfigDataContextRefresher extends ConfigDataContextRefresher
                 for (PropertySource<?> source : sources) {
                     extract(source, result);
                 }
-            }
-            catch (Exception ignored) {
+            } catch (Exception ignored) {
                 // Ignore exceptions that may occur while extracting properties from composite sources
             }
         } else if (parent instanceof EnumerablePropertySource<?> propertySource) {

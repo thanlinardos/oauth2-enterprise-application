@@ -1,9 +1,9 @@
 package com.thanlinardos.resource_server.misc.utils;
 
-import org.jetbrains.annotations.NotNull;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class RoleUtils {
                 .toList();
     }
 
-    public static @NotNull List<String> getRoleNamesFromAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public static @Nonnull List<String> getRoleNamesFromAuthorities(Collection<? extends GrantedAuthority> authorities) {
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(name -> name.startsWith(ROLE_PREFIX))

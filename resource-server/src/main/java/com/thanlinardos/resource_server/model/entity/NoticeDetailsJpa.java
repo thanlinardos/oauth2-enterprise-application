@@ -1,8 +1,11 @@
 package com.thanlinardos.resource_server.model.entity;
 
 import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;

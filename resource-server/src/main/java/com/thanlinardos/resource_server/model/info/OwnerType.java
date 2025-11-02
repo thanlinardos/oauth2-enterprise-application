@@ -21,9 +21,9 @@ public enum OwnerType {
 
     @JsonCreator
     public static OwnerType fromValue(String value) {
-        for (OwnerType O : OwnerType.values()) {
-            if (O.value.equals(value)) {
-                return O;
+        for (OwnerType o : OwnerType.values()) {
+            if (o.value.equals(value)) {
+                return o;
             }
         }
         throw new IllegalArgumentException("Unexpected value '" + value + "'");

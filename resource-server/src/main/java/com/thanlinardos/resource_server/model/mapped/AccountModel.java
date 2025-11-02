@@ -6,7 +6,10 @@ import com.thanlinardos.resource_server.model.entity.AccountJpa;
 import com.thanlinardos.resource_server.model.entity.AccountTransactionJpa;
 import com.thanlinardos.resource_server.model.entity.CardJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
@@ -35,12 +38,22 @@ public class AccountModel extends BasicIdModel implements Serializable, OwnedRes
         this.setOwner(new OwnerModel(entity.getOwner()));
     }
 
+    /**
+     * Sets the accountTransactions list by converting a list of AccountTransactionJpa entities to AccountTransactionModel.
+     *
+     * @param entities the list of AccountTransactionJpa entities to be converted and set.
+     */
     public void setAccountTransactionJpas(List<AccountTransactionJpa> entities) {
         this.setAccountTransactions(entities.stream()
                 .map(AccountTransactionModel::new)
                 .toList());
     }
 
+    /**
+     * Sets the cards list by converting a list of CardJpa entities to CardModel.
+     *
+     * @param entities the list of CardJpa entities to be converted and set.
+     */
     public void setCardJpas(List<CardJpa> entities) {
         this.setCards(entities.stream()
                 .map(CardModel::new)

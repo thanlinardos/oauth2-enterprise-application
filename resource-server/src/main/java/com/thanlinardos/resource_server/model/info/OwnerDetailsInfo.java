@@ -4,7 +4,9 @@ import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;

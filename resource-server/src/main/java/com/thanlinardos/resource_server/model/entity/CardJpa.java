@@ -2,8 +2,11 @@ package com.thanlinardos.resource_server.model.entity;
 
 import com.thanlinardos.resource_server.model.entity.base.BasicManyToOneAccountIdJpa;
 import com.thanlinardos.resource_server.model.mapped.CardModel;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.EntityUtils.buildEntityWithIdOrNull;

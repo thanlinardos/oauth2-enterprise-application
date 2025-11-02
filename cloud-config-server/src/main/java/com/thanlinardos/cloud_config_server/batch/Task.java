@@ -1,6 +1,7 @@
 package com.thanlinardos.cloud_config_server.batch;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
@@ -88,14 +89,14 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", retryCount=" + retryCount +
-                ", isMarkedForCancellation=" + isMarkedForCancellation +
-                ", isScheduled=" + isScheduled() +
-                ", isDone=" + isScheduledDone() +
-                ", isCanceled=" + isScheduledCanceled() +
-                ", runTime=" + runTime +
-                '}';
+        return "Task{"
+                + "name='" + name + '\''
+                + ", retryCount=" + retryCount
+                + ", isMarkedForCancellation=" + isMarkedForCancellation
+                + ", isScheduled=" + isScheduled()
+                + ", isDone=" + isScheduledDone()
+                + ", isCanceled=" + isScheduledCanceled()
+                + ", runTime=" + runTime
+                + '}';
     }
 }

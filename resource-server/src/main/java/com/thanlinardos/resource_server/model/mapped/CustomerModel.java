@@ -1,14 +1,16 @@
 package com.thanlinardos.resource_server.model.mapped;
 
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 import com.thanlinardos.resource_server.model.entity.CustomerJpa;
 import com.thanlinardos.resource_server.model.mapped.base.BasicAuditableModel;
-import lombok.*;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.UUID;
-
-import lombok.experimental.SuperBuilder;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.model.entity;
 
-import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import com.thanlinardos.resource_server.model.info.ContactMessage;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Data;

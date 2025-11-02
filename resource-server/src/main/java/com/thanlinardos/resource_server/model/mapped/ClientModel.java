@@ -3,7 +3,9 @@ package com.thanlinardos.resource_server.model.mapped;
 import com.thanlinardos.resource_server.model.entity.ClientJpa;
 import com.thanlinardos.resource_server.model.mapped.base.BasicAuditableModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;

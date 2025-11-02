@@ -3,8 +3,13 @@ package com.thanlinardos.resource_server.model.entity;
 import com.thanlinardos.resource_server.model.entity.base.BasicManyToOneAccountIdJpa;
 import com.thanlinardos.resource_server.model.entity.base.IndirectlyOwnedEntity;
 import com.thanlinardos.resource_server.model.mapped.AccountTransactionModel;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;

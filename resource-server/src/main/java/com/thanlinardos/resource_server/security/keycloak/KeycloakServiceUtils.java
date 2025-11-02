@@ -1,6 +1,5 @@
 package com.thanlinardos.resource_server.security.keycloak;
 
-import com.thanlinardos.resource_server.model.info.*;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
@@ -18,7 +17,8 @@ import org.springframework.http.HttpStatusCode;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

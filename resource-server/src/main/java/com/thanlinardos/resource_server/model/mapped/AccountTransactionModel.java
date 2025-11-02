@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thanlinardos.resource_server.model.OwnedResource;
 import com.thanlinardos.resource_server.model.entity.AccountTransactionJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;

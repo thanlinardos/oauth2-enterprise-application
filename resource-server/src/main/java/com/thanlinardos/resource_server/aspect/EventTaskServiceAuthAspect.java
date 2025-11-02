@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,7 +31,7 @@ public class EventTaskServiceAuthAspect {
         AuthorizationAspectHelper.refreshOwnerSecurityContext(jp, getAllGrantedAuthorities());
     }
 
-    private @NotNull List<GrantedAuthority> getAllGrantedAuthorities() {
+    private List<GrantedAuthority> getAllGrantedAuthorities() {
         return roleService.getAllAuthorities().stream()
                 .map(Authority::getName)
                 .map(SimpleGrantedAuthority::new)

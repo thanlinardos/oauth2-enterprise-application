@@ -39,9 +39,9 @@ public class PrivilegedResourceServiceImpl implements PrivilegedResourceService 
         }
         Integer privilegeLevel = getPrivilegeLevelFromAuthorities(authentication.getAuthorities());
         Jwt principal = (Jwt) authentication.getPrincipal();
-        return privilegeLevel <= resource.getMaxPrivilegeLevel() &&
-                (privilegeLevel < resource.getPrivilegeLevel() ||
-                        (privilegeLevel.equals(resource.getPrivilegeLevel()) && resource.samePrivilegeLevelCheck(principal))
+        return privilegeLevel <= resource.getMaxPrivilegeLevel()
+                && (privilegeLevel < resource.getPrivilegeLevel()
+                || (privilegeLevel.equals(resource.getPrivilegeLevel()) && resource.samePrivilegeLevelCheck(principal))
                 );
     }
 

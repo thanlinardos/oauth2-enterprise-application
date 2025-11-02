@@ -1,7 +1,10 @@
 package com.thanlinardos.resource_server.model.mapped;
 
 import com.thanlinardos.resource_server.model.entity.OwnerJpa;
-import com.thanlinardos.resource_server.model.info.*;
+import com.thanlinardos.resource_server.model.info.Client;
+import com.thanlinardos.resource_server.model.info.Customer;
+import com.thanlinardos.resource_server.model.info.OwnerDetailsInfo;
+import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.mapped.base.BasicAuditableModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 import jakarta.annotation.Nullable;

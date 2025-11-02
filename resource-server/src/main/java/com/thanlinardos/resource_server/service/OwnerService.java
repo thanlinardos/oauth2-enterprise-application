@@ -8,10 +8,10 @@ import com.thanlinardos.resource_server.repository.api.OwnerRepository;
 import com.thanlinardos.resource_server.service.roleservice.RoleServiceImpl;
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class OwnerService {
         return owner;
     }
 
-    private @NotNull Integer getDefaultGuestPrivilegeLvl(List<RoleJpa> defaultGuestRoles) {
+    private @Nonnull Integer getDefaultGuestPrivilegeLvl(List<RoleJpa> defaultGuestRoles) {
         return defaultGuestRoles.stream()
                 .map(RoleJpa::getPrivilegeLvl)
                 .min(Integer::compareTo)

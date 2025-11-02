@@ -1,8 +1,8 @@
 package com.thanlinardos.resource_server.repository;
 
 import com.thanlinardos.resource_server.model.entity.OwnerJpa;
-import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import com.thanlinardos.resource_server.repository.api.CustomOwnerRepository;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

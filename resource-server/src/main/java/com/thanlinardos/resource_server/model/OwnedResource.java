@@ -8,6 +8,7 @@ import lombok.ToString;
 public interface OwnedResource<T extends OwnedResource<T>> extends PrivilegedResource {
 
     OwnerModel getOwner();
+
     void setOwner(OwnerModel owner);
 
     @SuppressWarnings("unchecked")

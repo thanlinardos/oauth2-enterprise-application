@@ -2,7 +2,9 @@ package com.thanlinardos.resource_server.batch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thanlinardos.resource_server.batch.keycloak.event.*;
+import com.thanlinardos.resource_server.batch.keycloak.event.AdminEventRepresentationPlaceholder;
+import com.thanlinardos.resource_server.batch.keycloak.event.EventRepresentationPlaceholder;
+import com.thanlinardos.resource_server.batch.keycloak.event.ResourceIdType;
 import com.thanlinardos.resource_server.misc.utils.RoleUtils;
 import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.info.TaskType;
@@ -15,7 +17,6 @@ import com.thanlinardos.resource_server.service.TaskRunService;
 import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
 import com.thanlinardos.resource_server.service.userservice.api.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.keycloak.representations.idm.AdminEventRepresentation;
 import org.keycloak.representations.idm.EventRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -25,8 +26,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Component
@@ -276,7 +284,7 @@ public class KeycloakEventTask {
         }
     }
 
-    private @NotNull List<String> parseRoleNamesFromEvent(AdminEventRepresentationPlaceholder event) throws JsonProcessingException {
+    private @Nonnull List<String> parseRoleNamesFromEvent(AdminEventRepresentationPlaceholder event) throws JsonProcessingException {
         List<RoleRepresentation> roleRepresentations = objectMapper.readerForListOf(RoleRepresentation.class).readValue(event.getRepresentation());
         return RoleUtils.getRoleNamesFromRoleRepresentations(roleRepresentations);
     }
