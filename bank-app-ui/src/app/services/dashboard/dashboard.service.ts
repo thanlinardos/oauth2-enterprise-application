@@ -12,8 +12,8 @@ export class DashboardService {
   constructor(private readonly http: HttpClient) {
   }
 
-  getAccountDetails(name: string) {
-    return this.http.get(environment.rooturl + AppConstants.ACCOUNT_API_URL + "?username=" + name, {
+  getAccountDetails(email: string) {
+    return this.http.get(environment.rooturl + AppConstants.ACCOUNT_API_URL + "?email=" + email, {
       observe: 'response',
       withCredentials: true
     });

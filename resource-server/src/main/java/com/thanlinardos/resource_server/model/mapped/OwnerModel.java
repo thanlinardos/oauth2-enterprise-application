@@ -1,12 +1,14 @@
 package com.thanlinardos.resource_server.model.mapped;
 
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
 import com.thanlinardos.resource_server.model.info.Client;
 import com.thanlinardos.resource_server.model.info.Customer;
 import com.thanlinardos.resource_server.model.info.OwnerDetailsInfo;
 import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.mapped.base.BasicAuditableModel;
+import com.thanlinardos.spring_enterprise_library.error.errorcodes.ErrorCode;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.ModelUtils;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +16,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -29,7 +31,7 @@ public class OwnerModel extends BasicAuditableModel implements Serializable, Pri
     private OwnerType type;
     private int privilegeLevel;
     @Builder.Default
-    private List<RoleModel> roles = new ArrayList<>();
+    private Set<RoleModel> roles = new HashSet<>();
     @Nullable
     private CustomerModel customer;
     @Nullable
@@ -40,9 +42,7 @@ public class OwnerModel extends BasicAuditableModel implements Serializable, Pri
         this.uuid = entity.getUuid();
         this.principalName = entity.getName();
         this.privilegeLevel = entity.getPrivilegeLevel();
-        this.roles = entity.getRoles().stream()
-                .map(RoleModel::new)
-                .toList();
+        this.roles = ModelUtils.getModelsSetFromEntities(entity.getRoles(), RoleModel::new);
         if (entity.getCustomer() != null) {
             this.customer = new CustomerModel(entity.getCustomer());
         } else if (entity.getClient() != null) {
@@ -74,7 +74,7 @@ public class OwnerModel extends BasicAuditableModel implements Serializable, Pri
 
     public Customer toCustomerInfo() {
         if (customer == null) {
-            throw new IllegalArgumentException("Customer is null for owner with id " + this.getId());
+            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Customer is null for owner with id {0}", new Object[]{this.getId()});
         }
         return Customer.builder()
                 .uuid(this.uuid)

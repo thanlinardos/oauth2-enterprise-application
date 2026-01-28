@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.aspect;
 
-import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.resource_server.service.role.api.OauthRoleService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.aspect.AuthorizationAspectHelper;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import lombok.RequiredArgsConstructor;

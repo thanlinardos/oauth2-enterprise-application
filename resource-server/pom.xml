@@ -49,6 +49,7 @@
         <sonar.sources>src,pom.xml</sonar.sources>
         <sonar.test.inclusions>src/test/**/*</sonar.test.inclusions>
         <sonar.tests>src</sonar.tests>
+        <keycloak-client-thanlinardos-fork.version>999.0.0-SNAPSHOT</keycloak-client-thanlinardos-fork.version>
     </properties>
     <dependencies>
         <dependency>
@@ -205,12 +206,12 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>26.0.0</version>
+            <version>${keycloak-client-thanlinardos-fork.version}</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-common</artifactId>
-            <version>26.4.1</version>
+            <version>${keycloak-client-thanlinardos-fork.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

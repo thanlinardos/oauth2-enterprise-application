@@ -2,7 +2,7 @@ package com.thanlinardos.resource_server.model.mapped;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thanlinardos.resource_server.model.OwnedResource;
-import com.thanlinardos.resource_server.model.entity.AccountTransactionJpa;
+import com.thanlinardos.resource_server.model.entity.account.AccountTransactionJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

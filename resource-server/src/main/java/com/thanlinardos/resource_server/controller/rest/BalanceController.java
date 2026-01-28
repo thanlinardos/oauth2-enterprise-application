@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.rest;
 
 import com.thanlinardos.resource_server.model.mapped.AccountTransactionModel;
-import com.thanlinardos.resource_server.service.AccountTransactionsService;
+import com.thanlinardos.resource_server.service.account.AccountTransactionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

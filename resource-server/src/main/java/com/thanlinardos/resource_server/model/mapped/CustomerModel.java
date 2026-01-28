@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.mapped;
 
-import com.thanlinardos.resource_server.model.entity.CustomerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.CustomerJpa;
 import com.thanlinardos.resource_server.model.mapped.base.BasicAuditableModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 import lombok.Builder;

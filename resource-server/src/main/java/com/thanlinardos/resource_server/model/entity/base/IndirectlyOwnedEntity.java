@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 
 public interface IndirectlyOwnedEntity<T extends IndirectlyOwnedEntity<T>> extends PrivilegedResource {

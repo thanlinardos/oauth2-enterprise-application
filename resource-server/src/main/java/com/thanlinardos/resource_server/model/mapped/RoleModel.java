@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.mapped;
 
-import com.thanlinardos.resource_server.model.entity.RoleJpa;
+import com.thanlinardos.resource_server.model.entity.role.RoleJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Role;
@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +21,6 @@ import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.c
 
 @AllArgsConstructor
 @SuperBuilder
-@ToString
 @EqualsAndHashCode(callSuper = true)
 @Getter
 public class RoleModel extends BasicIdModel implements Serializable, Role {
@@ -57,5 +55,10 @@ public class RoleModel extends BasicIdModel implements Serializable, Role {
 
     public String getNameNoPrefix() {
         return role.startsWith(ROLE_PREFIX) ? role.substring(ROLE_PREFIX.length()) : role;
+    }
+
+    @Override
+    public String toString() {
+        return "Role[name=" + role + ", lvl=" + privilegeLvl + "]";
     }
 }

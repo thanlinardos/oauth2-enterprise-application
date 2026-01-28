@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.thanlinardos.cloud_config_server.batch.BatchJobProcessor;
-import com.thanlinardos.cloud_config_server.batch.BatchJobRunScheduler;
+import com.thanlinardos.cloud_config_server.batch.BatchTaskScheduler;
 import com.thanlinardos.cloud_config_server.batch.Task;
 import com.thanlinardos.cloud_config_server.vault.properties.batch.VaultSyncJobConfig;
-import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.ApplicationEnvironmentProperties;
-import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.ApplicationVaultProperties;
-import com.thanlinardos.cloud_config_server.vault.properties.update_credentials.VaultUpdateCredentialsProperties;
+import com.thanlinardos.cloud_config_server.vault.properties.update.credentials.ApplicationEnvironmentProperties;
+import com.thanlinardos.cloud_config_server.vault.properties.update.credentials.ApplicationVaultProperties;
+import com.thanlinardos.cloud_config_server.vault.properties.update.credentials.VaultUpdateCredentialsProperties;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -32,17 +31,22 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
-public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
+public class VaultSyncJob extends BatchTaskScheduler<VaultSyncJobConfig> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public VaultSyncJob(ThreadPoolTaskScheduler taskScheduler, VaultSyncJobConfig config) {
+    public VaultSyncJob(ThreadPoolTaskScheduler taskScheduler, VaultSyncJobConfig config, ObjectMapper objectMapper) {
         super(taskScheduler, config);
+        this.objectMapper = objectMapper;
     }
 
     @Override
     protected Logger getLogger() {
         return log;
+    }
+
+    private String getTaskName(ApplicationVaultProperties application, ApplicationEnvironmentProperties environment) {
+        return getTaskName(application.name(), environment.name());
     }
 
     @Override
@@ -152,7 +156,7 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
 
     private boolean hasApplicationEnvironment(String name, ApplicationVaultProperties application) {
         return application.environments().stream()
-                .anyMatch(environment -> getTaskName(application.name(), environment.name()).equals(name));
+                .anyMatch(environment -> getTaskName(application, environment).equals(name));
     }
 
     private void syncDatabaseCredentialsForApplication(ApplicationVaultProperties application, VaultUpdateCredentialsProperties properties) {
@@ -163,7 +167,7 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
     }
 
     private boolean isSyncNotScheduledForEnvironment(ApplicationVaultProperties application, ApplicationEnvironmentProperties environment) {
-        String taskName = getTaskName(application.name(), environment.name());
+        String taskName = getTaskName(application, environment);
         return isTaskNotScheduled(taskName);
     }
 
@@ -217,7 +221,7 @@ public class VaultSyncJob extends BatchJobProcessor<VaultSyncJobConfig> {
     }
 
     private boolean isOutsideSchedulingWindow(long refreshTime) {
-        return refreshTime > BatchJobRunScheduler.SCHEDULING_WINDOW_SECONDS;
+        return refreshTime > getConfig().getTimerScheduleWindowSeconds();
     }
 
     private boolean isRetryOrNotScheduledForRetry(String taskName, boolean isRetry) {

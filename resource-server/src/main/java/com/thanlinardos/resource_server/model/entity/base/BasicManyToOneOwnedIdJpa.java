@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
 import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -21,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 public class BasicManyToOneOwnedIdJpa extends BasicIdJpa implements BasicOwnedEntity {
 
-    @ManyToOne(targetEntity = OwnerJpa.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = OwnerJpa.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     @ToString.Exclude
     private OwnerJpa owner;

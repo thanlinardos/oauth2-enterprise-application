@@ -16,9 +16,9 @@ BEGIN
             `account_number` int          NOT NULL,
             `account_type`   varchar(100) NOT NULL,
             `branch_address` varchar(200) NOT NULL,
-            created_at       timestamp    not null default current_timestamp,
+            created_at       datetime(6)    not null default current_timestamp(6),
             created_by       varchar(55)  not null default 'system',
-            updated_at       timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at       datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by       varchar(55)  not null default 'system',
             KEY `owner_id` (`owner_id`),
             CONSTRAINT `account_owner_fk` FOREIGN KEY (`owner_id`) REFERENCES `owner` (`id`)
@@ -29,14 +29,14 @@ BEGIN
             `id`                  int          NOT NULL AUTO_INCREMENT primary key,
             `transaction_id`      varchar(200) NOT NULL,
             `account_id`          int          NOT NULL,
-            `transaction_dt`      timestamp    not null default current_timestamp,
+            `transaction_dt`       datetime(6)    not null default current_timestamp(6),
             `transaction_summary` varchar(200) NOT NULL,
             `transaction_type`    varchar(100) NOT NULL,
             `transaction_amt`     int          NOT NULL,
             `closing_balance`     int          NOT NULL,
-            created_at            timestamp    not null default current_timestamp,
+            created_at             datetime(6)    not null default current_timestamp(6),
             created_by            varchar(55)  not null default 'system',
-            updated_at            timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at             datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by            varchar(55)  not null default 'system',
             KEY `account_id` (`account_id`),
             CONSTRAINT `accounts_account_transaction_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE
@@ -51,9 +51,9 @@ BEGIN
             `total_loan`         int          NOT NULL,
             `amount_paid`        int          NOT NULL,
             `outstanding_amount` int          NOT NULL,
-            created_at           timestamp    not null default current_timestamp,
+            created_at           datetime(6)    not null default current_timestamp(6),
             created_by           varchar(55)  not null default 'system',
-            updated_at           timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at           datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by           varchar(55)  not null default 'system'
         );
 
@@ -66,9 +66,9 @@ BEGIN
             `total_limit`      int          NOT NULL,
             `amount_used`      int          NOT NULL,
             `available_amount` int          NOT NULL,
-            created_at         timestamp    not null default current_timestamp,
+            created_at         datetime(6)    not null default current_timestamp(6),
             created_by         varchar(55)  not null default 'system',
-            updated_at         timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at         datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by         varchar(55)  not null default 'system',
             KEY `account_id` (`account_id`),
             CONSTRAINT `accounts_cards_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE
@@ -78,13 +78,13 @@ BEGIN
         CREATE TABLE if not exists `notice_details`
         (
             `id`             int          NOT NULL AUTO_INCREMENT primary key,
-            `notice_summary` varchar(200) NOT NULL,
-            `notice_details` varchar(500) NOT NULL,
+            `notice_summary` varchar(200) charset utf8mb4 NOT NULL,
+            `notice_details` varchar(500) charset utf8mb4 NOT NULL,
             `notic_beg_dt`   date         NOT NULL,
             `notic_end_dt`   date                  DEFAULT NULL,
-            created_at       timestamp    not null default current_timestamp,
+            created_at       datetime(6)    not null default current_timestamp(6),
             created_by       varchar(55)  not null default 'system',
-            updated_at       timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at       datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by       varchar(55)  not null default 'system'
         );
 
@@ -94,11 +94,11 @@ BEGIN
             `contact_id`    varchar(50)   NOT NULL,
             `contact_name`  varchar(50)   NOT NULL,
             `contact_email` varchar(100)  NOT NULL,
-            `subject`       varchar(500)  NOT NULL,
-            `message`       varchar(2000) NOT NULL,
-            created_at      timestamp     not null default current_timestamp,
+            `subject`       varchar(500)  charset utf8mb4 NOT NULL,
+            `message`       varchar(2000) charset utf8mb4 NOT NULL,
+            created_at       datetime(6)     not null default current_timestamp(6),
             created_by      varchar(55)   not null default 'system',
-            updated_at      timestamp     not null default current_timestamp on update current_timestamp,
+            updated_at       datetime(6)     not null default current_timestamp(6) on update current_timestamp(6),
             updated_by      varchar(55)   not null default 'system'
         );
 

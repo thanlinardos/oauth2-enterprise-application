@@ -4,14 +4,15 @@ import org.aspectj.lang.annotation.Pointcut;
 
 abstract class PointCutDefinitions {
 
-    @Pointcut("execution(public * com.thanlinardos.resource_server.service.*.*(..))"
+    @Pointcut("execution(public * com.thanlinardos.resource_server.service..*.*(..))"
             + "&& !execution(public com.thanlinardos.resource_server.model.entity.* *.*(..))"
             + "&& !execution(public java.util.List<com.thanlinardos.resource_server.model.entity.*> *.*(..))"
-            + "&& !execution(public java.util.Optional<com.thanlinardos.resource_server.model.entity.*> *.*(..))")
+            + "&& !execution(public java.util.Optional<com.thanlinardos.resource_server.model.entity.*> *.*(..))"
+            + "&& !@annotation(com.thanlinardos.resource_server.aspect.annotation.ExcludeFromLoggingAspect)")
     protected void forServicePackageAndNotEntityReturned() {
     }
 
-    @Pointcut("execution(public * com.thanlinardos.resource_server.controller.*.*.*(..)) && "
+    @Pointcut("execution(public * com.thanlinardos.resource_server.controller..*.*(..)) && "
             + "(@annotation(org.springframework.web.bind.annotation.RequestMapping) "
                 + "|| @annotation(org.springframework.web.bind.annotation.GetMapping) "
                 + "|| @annotation(org.springframework.web.bind.annotation.PutMapping) "

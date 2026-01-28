@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.rest;
 
 import com.thanlinardos.resource_server.model.mapped.NoticeDetailsModel;
-import com.thanlinardos.resource_server.service.NoticeService;
+import com.thanlinardos.resource_server.service.contact.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;

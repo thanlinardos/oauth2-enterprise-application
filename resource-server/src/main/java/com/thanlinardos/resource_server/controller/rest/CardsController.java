@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.rest;
 
 import com.thanlinardos.resource_server.model.mapped.CardModel;
-import com.thanlinardos.resource_server.service.CardService;
+import com.thanlinardos.resource_server.service.account.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

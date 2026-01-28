@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "batch.run-timer.enabled",
+      "type": "java.lang.String",
+      "description": "Enable/Disable the batch run timer."
+    },
+    {
+      "name": "batch.run-timer.frequency-ms",
+      "type": "java.lang.Long",
+      "description": "The frequency in milliseconds at which the batch run timer triggers."
+    },
+    {
+      "name": "batch.run-timer.initial-delay-ms",
+      "type": "java.lang.Long",
+      "description": "The initial delay in milliseconds before the batch run timer starts."
+    },
+    {
+      "name": "batch.run-timer.schedule-window-seconds",
+      "type": "java.lang.Long",
+      "description": "The schedule window in seconds for the batch run timer."
+    },
+    {
+      "name": "thanlinardos.springenterpriselibrary.oauth2.client-certificate-path-format",
+      "type": "java.lang.String",
+      "description": "Defines the path format where to find client certificates for OAuth2 client authentication."
+    }
+  ]
+}

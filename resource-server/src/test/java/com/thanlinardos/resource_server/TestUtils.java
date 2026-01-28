@@ -17,6 +17,7 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser> {
@@ -103,7 +104,7 @@ public class TestUtils implements WithSecurityContextFactory<WithMockCustomUser>
                 .build();
     }
 
-    public static OwnerModel buildTestOwner(String email, List<RoleModel> roles) {
+    public static OwnerModel buildTestOwner(String email, Set<RoleModel> roles) {
         return OwnerModel.builder()
                 .type(OwnerType.CUSTOMER)
                 .principalName(email)

@@ -2,11 +2,11 @@ package com.thanlinardos.resource_server.model.info;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.thanlinardos.spring_enterprise_library.error.errorcodes.ErrorCode;
 
 public enum TaskType {
 
-    KEYCLOAK_EVENT_TASK("KEYCLOAK_EVENT_TASK"),
-    KEYCLOAK_ADMIN_EVENT_TASK("KEYCLOAK_ADMIN_EVENT_TASK");
+    KEYCLOAK_EVENT_TASK("KEYCLOAK_EVENT_TASK");
 
     private final String value;
 
@@ -26,11 +26,11 @@ public enum TaskType {
 
     @JsonCreator
     public static TaskType fromValue(String value) {
-        for (TaskType b : TaskType.values()) {
-            if (b.value.equals(value)) {
-                return b;
+        for (TaskType type : TaskType.values()) {
+            if (type.value.equals(value)) {
+                return type;
             }
         }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+        throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Unexpected value: {0} for TaskType enum.", new Object[]{value});
     }
 }

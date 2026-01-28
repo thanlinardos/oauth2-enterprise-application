@@ -1,20 +1,21 @@
 package com.thanlinardos.cloud_config_server.vault.properties.batch;
 
-import com.thanlinardos.cloud_config_server.batch.properties.BatchJobConfig;
+import com.thanlinardos.cloud_config_server.batch.properties.BatchSchedulerConfig;
+import com.thanlinardos.cloud_config_server.batch.properties.SchedulerExecutionProperties;
 import com.thanlinardos.cloud_config_server.batch.properties.TaskExecutionProperties;
 import lombok.Getter;
 import org.springframework.web.client.RestTemplate;
 
 @Getter
-public class VaultSyncJobConfig extends BatchJobConfig {
+public class VaultSyncJobConfig extends BatchSchedulerConfig {
 
     private static final String VAULT_SYNC_JOB = "VAULT_SYNC_JOB";
 
     private final RestTemplate restTemplate;
     private final VaultConnectionProperties connectionProperties;
 
-    public VaultSyncJobConfig(int maxExecutionAttempts, TaskExecutionProperties taskExecutionProperties, VaultConnectionProperties connectionProperties, RestTemplate restTemplate, boolean runOnStartUp) {
-        super(maxExecutionAttempts, taskExecutionProperties, runOnStartUp);
+    public VaultSyncJobConfig(SchedulerExecutionProperties schedulerExecutionProperties, TaskExecutionProperties taskExecutionProperties, VaultConnectionProperties connectionProperties, RestTemplate restTemplate) {
+        super(schedulerExecutionProperties, taskExecutionProperties);
         this.restTemplate = restTemplate;
         this.connectionProperties = connectionProperties;
     }

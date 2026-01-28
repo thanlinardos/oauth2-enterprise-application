@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.security;
 
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
-import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.resource_server.service.role.api.OauthRoleService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.security.SecurityCommonConfig;
 import org.springframework.context.annotation.Bean;

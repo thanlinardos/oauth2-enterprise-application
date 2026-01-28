@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
 import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;

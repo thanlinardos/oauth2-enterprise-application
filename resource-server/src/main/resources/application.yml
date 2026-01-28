@@ -28,60 +28,67 @@ spring:
   cloud:
     config:
       enabled: true
+  ssl:
+    bundle:
+      jks:
+        server:
+          reload-on-update: true
+          key:
+            alias: "server"
+          keystore:
+            location: "classpath:certificate_scripts/cert/server.p12"
+            password: ${KEYSTORE_PASS}
+            type: "PKCS12"
+          truststore:
+            location: "classpath:certificate_scripts/cert/truststore.p12"
+            password: ${TRUSTSTORE_PASS}
+            type: "PKCS12"
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-  endpoint:
-    refresh:
-      access: unrestricted
 server:
   http2:
     enabled: true
   ssl:
-    enabled: true
-    key-store: "classpath:cert/server.p12"
-    key-store-password: ${KEYSTORE_PASS}
-    key-store-type: PKCS12
-    key-alias: server
+    bundle: "server"
     client-auth: need
-    trust-store: "classpath:cert/truststore.p12"
-    trust-store-password: ${TRUSTSTORE_PASS}
-    trust-store-type: PKCS12
-    key-password: ${KEYSTORE_PASS}
 scheduling:
   enabled: true
 integration:
   test:
     enabled: false
-secrets:
-  refresh-interval-ms: 10000
-  refresh:
-    displayValues: false
-    enabled: true
-angular-ui:
-  url: ${UI_URL}
-oauth2:
-  auth-server: KEYCLOAK
-  github:
-    client:
-      id: ${GITHUB_CLIENT_ID}
-      secret: ${GITHUB_CLIENT_SECRET}
-  facebook:
-    client:
-      id: ${FACEBOOK_CLIENT_ID}
-      secret: ${FACEBOOK_CLIENT_SECRET}
-  keycloak:
-    url: ${KEYCLOAK_AUTH_URI}
-    realm: ${KEYCLOAK_REALM}
-    token: JWT
-    client:
-      id: ${KEYCLOAK_CLIENT_ID}
-      secret: ${KEYCLOAK_CLIENT_SECRET}
-      truststore:
-        path: "classpath:cert/truststore.p12"
-        password: password
-      keystore:
-        path: "classpath:cert/local_keycloak_client/local_keycloak_client.p12"
-        password: pass
+thanlinardos:
+    springenterpriselibrary:
+      secrets:
+        refresh-interval-ms: 1800000
+        refresh:
+          displayValues: false
+          enabled: true
+      angular-ui:
+        url: ${UI_URL}
+      oauth2:
+        auth-server: KEYCLOAK
+        client-certificate-path-format: "classpath:certificate_scripts/cert/{0}/{0}.p12"
+        github:
+          client:
+            id: ${GITHUB_CLIENT_ID}
+            secret: ${GITHUB_CLIENT_SECRET}
+        facebook:
+          client:
+            id: ${FACEBOOK_CLIENT_ID}
+            secret: ${FACEBOOK_CLIENT_SECRET}
+        keycloak:
+          url: ${KEYCLOAK_AUTH_URI}
+          realm: ${KEYCLOAK_REALM}
+          token: JWT
+          client:
+            id: ${KEYCLOAK_CLIENT_ID}
+            secret: ${KEYCLOAK_CLIENT_SECRET}
+            truststore:
+              path: "classpath:certificate_scripts/cert/truststore.p12"
+              password: password
+            keystore:
+              path: "classpath:certificate_scripts/cert/local_keycloak_client/local_keycloak_client.p12"
+              password: pass

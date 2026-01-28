@@ -1,13 +1,17 @@
 server.port: ${CLOUD_CONFIG_SERVER_PORT}
 management:
-  endpoints.web.exposure.include: '*'
-  endpoint.scheduledtasks.access: read_only
+  endpoints.web.exposure.include: "*"
+  endpoint:
+    scheduledtasks.access: read_only
+    refresh:
+      access: unrestricted
 spring:
   application:
     name: cloud-config-server
   profiles:
     active: vault
   cloud.config:
+    enabled: true
     server:
       vault:
         backend: kv
@@ -28,6 +32,11 @@ spring:
       thread-name-prefix: BatchJob-
       pool.size: 10
 batch:
+  run-timer:
+    enabled: true
+    frequency-ms: 5000
+    initial-delay-ms: 5000
+    schedule-window-seconds: 2000
   vault-sync:
     backoff-step-size: 60
     max-delay: 3600
@@ -35,3 +44,11 @@ batch:
     max-execution-attempts: 3
     max-lease-expiry-percent: 90
     run-on-startup: true
+thanlinardos:
+    springenterpriselibrary:
+      secrets:
+        refresh:
+          displayValues: false
+          enabled: true
+      oauth2:
+        client-certificate-path-format: "classpath:{0}.p12"

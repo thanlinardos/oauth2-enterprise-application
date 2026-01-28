@@ -7,10 +7,10 @@ import com.thanlinardos.resource_server.model.info.RegisterCustomerDetails;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
-import com.thanlinardos.resource_server.service.ClientService;
-import com.thanlinardos.resource_server.service.CustomerService;
-import com.thanlinardos.resource_server.service.OwnerService;
-import com.thanlinardos.resource_server.service.userservice.api.UserService;
+import com.thanlinardos.resource_server.service.owner.ClientService;
+import com.thanlinardos.resource_server.service.owner.CustomerService;
+import com.thanlinardos.resource_server.service.owner.OwnerService;
+import com.thanlinardos.resource_server.service.user.api.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -35,14 +36,17 @@ public class CustomerController {
 
     @GetMapping("/customers/{email}")
     public ResponseEntity<CustomerModel> getCustomerByUsernameOrEmail(@PathVariable String email) {
-        return customerService.getCustomerByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(customerService.getCustomerByEmail(email));
     }
 
     @GetMapping("/customers")
     public ResponseEntity<List<CustomerModel>> getCustomers() {
         return ResponseEntity.ok(customerService.getCustomers());
+    }
+
+    @PostMapping("/sync-customers")
+    public ResponseEntity<List<CustomerModel>> syncCustomers(@RequestParam boolean force) {
+        return ResponseEntity.ok(userService.syncAndGetAllCustomers(force));
     }
 
     @GetMapping("/clients")
@@ -52,9 +56,7 @@ public class CustomerController {
 
     @GetMapping("/clients/{name}")
     public ResponseEntity<ClientModel> getClientByName(@PathVariable String name) {
-        return clientService.getClientByName(name)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(clientService.getClientByNameOrFetch(name));
     }
 
     @GetMapping("/user")
@@ -83,7 +85,7 @@ public class CustomerController {
 
     @PostMapping("/customers")
     public ResponseEntity<Void> registerCustomer(@Valid @RequestBody RegisterCustomerDetails customerDetails) {
-        return ResponseEntity.created(URI.create("/customers/" + userService.createCustomer(customerDetails)))
+        return ResponseEntity.created(URI.create("/customers/" + userService.createGuestCustomer(customerDetails)))
                 .build();
     }
 

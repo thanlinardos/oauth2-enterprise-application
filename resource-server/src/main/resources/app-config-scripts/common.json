@@ -1,0 +1,31 @@
+{
+  "integration": {
+    "test": {
+      "enabled": false
+    }
+  },
+  "logging": {
+    "level": {
+      "root": "placeholder"
+    },
+    "pattern": {
+      "console": "placeholder"
+    }
+  },
+  "scheduling": {
+    "enabled": false
+  },
+  "server": {
+    "http2": {
+      "enabled": false
+    }
+  },
+  "spring": {
+    "application": {
+      "name": "placeholder"
+    },
+    "jpa": {
+      "open-in-view": false
+    }
+  }
+}

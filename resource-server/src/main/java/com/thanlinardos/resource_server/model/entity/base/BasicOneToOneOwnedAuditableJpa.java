@@ -1,7 +1,8 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
@@ -19,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 public class BasicOneToOneOwnedAuditableJpa extends BasicAuditableJpa implements BasicOwnedEntity {
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private OwnerJpa owner;
 }

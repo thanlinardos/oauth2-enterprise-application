@@ -1,12 +1,17 @@
 package com.thanlinardos.cloud_config_server;
 
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.environment.certs.SpringEnterpriseLibraryCertsPackage;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.environment.refresh.SpringEnterpriseLibraryRefreshPackage;
+import com.thanlinardos.spring_enterprise_library.time.SpringEnterpriseLibraryTimePackage;
 import com.thanlinardos.spring_enterprise_library.time.properties.TimeProviderProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 @Configuration
-@ComponentScan("com.thanlinardos.spring_enterprise_library")
+@ComponentScan(basePackageClasses = {SpringEnterpriseLibraryTimePackage.class, SpringEnterpriseLibraryCertsPackage.class, SpringEnterpriseLibraryRefreshPackage.class})
 @EnableConfigurationProperties(TimeProviderProperties.class)
+@DependsOn("timeFactory")
 public class LibraryConfigurations {
 }

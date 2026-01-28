@@ -5,7 +5,9 @@ import com.thanlinardos.resource_server.WithMockCustomUser;
 import com.thanlinardos.resource_server.model.info.OwnerType;
 import com.thanlinardos.resource_server.model.mapped.CustomerModel;
 import com.thanlinardos.resource_server.model.mapped.OwnerModel;
-import com.thanlinardos.resource_server.service.roleservice.api.OauthRoleService;
+import com.thanlinardos.resource_server.service.owner.OwnerService;
+import com.thanlinardos.resource_server.service.role.RoleCacheService;
+import com.thanlinardos.resource_server.service.role.api.OauthRoleService;
 import com.thanlinardos.spring_enterprise_library.annotations.SpringTest;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nullable;
@@ -15,12 +17,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -42,7 +45,9 @@ class OwnerServiceTest {
     @Autowired
     private OwnerService ownerService;
     @Autowired
-    private UserRoleCacheService userRoleCacheService;
+    private RoleCacheService roleCacheService;
+    @Autowired
+    private Environment environment;
 
     @Test
     @Sql(scripts = {"classpath:db/h2/clearUserData.sql"},
@@ -56,7 +61,7 @@ class OwnerServiceTest {
                 .principalName("test@email.com")
                 .customer(TestUtils.buildTestCustomer("test@email.com"))
                 .privilegeLevel(1)
-                .roles(List.of(roleService.findRole(ROLE_USER), roleService.findRole(ROLE_MANAGER), roleService.findRole(ROLE_ADMIN)))
+                .roles(Set.of(roleService.findRole(ROLE_USER), roleService.findRole(ROLE_MANAGER), roleService.findRole(ROLE_ADMIN)))
                 .createdAt(TimeFactory.getDateTime())
                 .createdBy("test")
                 .updatedAt(TimeFactory.getDateTime())
@@ -71,7 +76,7 @@ class OwnerServiceTest {
                 Arguments.of("Simple user",
                         "user@email.com",
                         null,
-                        TestUtils.buildTestOwner("user@email.com", List.of(buildRole(ROLE_USER))),
+                        TestUtils.buildTestOwner("user@email.com", Set.of(buildRole(ROLE_USER))),
                         ""),
                 Arguments.of("Manager, no rights",
                         "manager@email.com",

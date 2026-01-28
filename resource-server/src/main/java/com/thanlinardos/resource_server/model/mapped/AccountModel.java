@@ -2,10 +2,11 @@ package com.thanlinardos.resource_server.model.mapped;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thanlinardos.resource_server.model.OwnedResource;
-import com.thanlinardos.resource_server.model.entity.AccountJpa;
-import com.thanlinardos.resource_server.model.entity.AccountTransactionJpa;
-import com.thanlinardos.resource_server.model.entity.CardJpa;
+import com.thanlinardos.resource_server.model.entity.account.AccountJpa;
+import com.thanlinardos.resource_server.model.entity.account.AccountTransactionJpa;
+import com.thanlinardos.resource_server.model.entity.account.CardJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,11 +26,13 @@ public class AccountModel extends BasicIdModel implements Serializable, OwnedRes
     @ToString.Exclude
     @JsonIgnore
     private OwnerModel owner;
-    private List<AccountTransactionModel> accountTransactions;
+    @Builder.Default
+    private List<AccountTransactionModel> accountTransactions = new ArrayList<>();
     private Long accountNumber;
     private String accountType;
     private String branchAddress;
-    private List<CardModel> cards;
+    @Builder.Default
+    private List<CardModel> cards = new ArrayList<>();
 
     public AccountModel(AccountJpa entity) {
         super(entity);

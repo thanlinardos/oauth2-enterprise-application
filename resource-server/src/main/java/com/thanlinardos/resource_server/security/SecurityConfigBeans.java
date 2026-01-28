@@ -1,13 +1,12 @@
 package com.thanlinardos.resource_server.security;
 
-import com.thanlinardos.resource_server.service.KeycloakMappingService;
-import com.thanlinardos.resource_server.service.OwnerService;
-import com.thanlinardos.resource_server.service.userservice.KeycloakUserService;
-import com.thanlinardos.resource_server.service.userservice.OAuth2ServerUserService;
-import com.thanlinardos.resource_server.service.userservice.api.UserService;
+import com.thanlinardos.resource_server.service.keycloak.KeycloakMappingService;
+import com.thanlinardos.resource_server.service.owner.OwnerService;
+import com.thanlinardos.resource_server.service.user.KeycloakUserService;
+import com.thanlinardos.resource_server.service.user.OAuth2ServerUserService;
+import com.thanlinardos.resource_server.service.user.api.UserService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.OAuth2AuthServerType;
-import org.keycloak.admin.client.Keycloak;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
@@ -26,27 +25,25 @@ import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.c
 @Component
 public class SecurityConfigBeans {
 
-    @Value("${oauth2.github.client.id}")
+    @Value("${thanlinardos.springenterpriselibrary.oauth2.github.client.id}") // TODO: make properties class
     private String githubClientId;
-    @Value("${oauth2.github.client.secret}")
+    @Value("${thanlinardos.springenterpriselibrary.oauth2.github.client.secret}")
     private String githubClientSecret;
-    @Value("${oauth2.facebook.client.id}")
+    @Value("${thanlinardos.springenterpriselibrary.oauth2.facebook.client.id}")
     private String facebookClientId;
-    @Value("${oauth2.facebook.client.secret}")
+    @Value("${thanlinardos.springenterpriselibrary.oauth2.facebook.client.secret}")
     private String facebookClientSecret;
-    @Value("${oauth2.auth-server}")
+    @Value("${thanlinardos.springenterpriselibrary.oauth2.auth-server}")
     private OAuth2AuthServerType authServer;
-    @Value("${oauth2.keycloak.realm}")
-    private String realmName;
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUri;
 
     @Bean
     @RefreshScope
-    public UserService userService(OwnerService ownerService, @Autowired(required = false) Keycloak keycloak, KeycloakMappingService keycloakMappingService) {
+    public UserService userService(OwnerService ownerService, RealmResource keycloakRealm, KeycloakMappingService keycloakMappingService) {
         switch (authServer) {
             case KEYCLOAK -> {
-                return new KeycloakUserService(ownerService, keycloak, realmName, keycloakMappingService);
+                return new KeycloakUserService(ownerService, keycloakRealm, keycloakMappingService);
             }
             case SPRING_OAUTH2_SERVER -> {
                 return new OAuth2ServerUserService(ownerService, URI.create(issuerUri).getHost());

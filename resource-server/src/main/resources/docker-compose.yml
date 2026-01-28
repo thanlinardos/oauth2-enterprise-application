@@ -8,7 +8,7 @@ services:
   db:
     image: mysql:8.2.0
     env_file:
-      - dev.env
+      - prod.env
     ports:
       - "3308:3307"
     volumes:
@@ -17,7 +17,7 @@ services:
     networks:
       - vault_default
   keycloak.local:
-    image: quay.io/keycloak/keycloak:25.0.6
+    image: keycloak-thanlinardos-fork:latest
     depends_on:
       - db
     command: ["start",
@@ -29,12 +29,14 @@ services:
               "--https-key-store-file=/opt/keycloak/conf/local_keycloak_client.p12",
               "--https-key-store-password=pass",
               "--https-trust-store-file=/opt/keycloak/conf/truststore.p12",
-              "--https-trust-store-password=password"
+              "--https-trust-store-password=password",
+              "--https-certificates-reload-period=1m",
+              "--spi-datastore-legacy-allow-migrate-existing-database-to-snapshot=true" # used to allow database changes in keycloak fork to be migrated
     ]
     networks:
       - vault_default
     env_file:
-      - dev.env
+      - prod.env
     volumes:
       - ./keycloak/themes/:/opt/keycloak/themes
       - ./keycloak/local_keycloak_client.p12:/opt/keycloak/conf/local_keycloak_client.p12

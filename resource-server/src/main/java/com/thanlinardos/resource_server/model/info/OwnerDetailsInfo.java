@@ -1,5 +1,6 @@
 package com.thanlinardos.resource_server.model.info;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
@@ -11,8 +12,9 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class OwnerDetailsInfo implements Serializable, PrivilegedResource {
     private UUID uuid;
     @NotBlank
     private String name;
-    private List<RoleModel> roles;
+    private Set<RoleModel> roles;
     private LocalDate createDt;
 
     @Override
@@ -34,5 +36,17 @@ public class OwnerDetailsInfo implements Serializable, PrivilegedResource {
     @Override
     public String getPrincipalName() {
         return ParserUtil.safeParseString(uuid);
+    }
+
+    /**
+     * Get the names of the roles assigned to the owner.
+     *
+     * @return A set of role names.
+     */
+    @JsonIgnore
+    public Set<String> getRoleNames() {
+        return getRoles().stream()
+                .map(RoleModel::getName)
+                .collect(Collectors.toSet());
     }
 }

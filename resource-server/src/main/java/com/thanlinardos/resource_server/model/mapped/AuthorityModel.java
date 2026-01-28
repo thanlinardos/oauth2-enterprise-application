@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.mapped;
 
-import com.thanlinardos.resource_server.model.entity.AuthorityJpa;
+import com.thanlinardos.resource_server.model.entity.role.AuthorityJpa;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.AccessType;

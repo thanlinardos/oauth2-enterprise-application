@@ -25,8 +25,12 @@ export class HeaderComponent implements OnInit {
 
             if (this.isLoggedIn) {
                 this.userProfile = await this.keycloak.loadUserProfile();
+                this.user.uuid = this.userProfile.id ?? '';
                 this.user.name = this.userProfile.username ?? '';
                 this.user.details.email = this.userProfile.email ?? '';
+                this.user.details.firstName = this.userProfile.firstName ?? '';
+                this.user.details.lastName = this.userProfile.lastName ?? '';
+                this.user.details.mobileNumber = (this.userProfile.attributes?.['mobileNumber'] as string[])?.at(0) ?? '';
                 this.user.authDetails.authStatus = 'AUTH';
                 window.sessionStorage.setItem('userdetails', JSON.stringify(this.user));
             }

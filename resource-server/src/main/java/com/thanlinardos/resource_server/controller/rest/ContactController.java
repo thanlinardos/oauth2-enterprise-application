@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.rest;
 
 import com.thanlinardos.resource_server.model.info.ContactMessage;
-import com.thanlinardos.resource_server.service.ContactMessageService;
+import com.thanlinardos.resource_server.service.contact.ContactMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

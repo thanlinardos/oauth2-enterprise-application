@@ -1,44 +1,51 @@
 package com.thanlinardos.resource_server.batch.keycloak.event;
 
+import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakAdminEventJpa;
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
+import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.keycloak.representations.idm.AdminEventRepresentation;
-import org.keycloak.representations.idm.AuthDetailsRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Getter
 @Setter
-public class AdminEventRepresentationPlaceholder {
+public class AdminEventRepresentationPlaceholder extends EventPlaceholder {
 
-    private long time;
-    private String realmId;
-    private AuthDetailsRepresentation authDetails;
     private AdminEventOperationType operationType;
     private AdminEventResourceType resourceType;
     private String resourcePath;
-    private String representation;
-    private String error;
+    @Nullable private String representation;
+    private List<RoleRepresentation> roles = new ArrayList<>();
     @Nullable private UUID resourceId;
     @Nullable private ResourceIdType resourceIdType;
 
     public AdminEventRepresentationPlaceholder(AdminEventRepresentation event) {
-        setTime(event.getTime());
-        setRealmId(event.getRealmId());
-        setAuthDetails(event.getAuthDetails());
+        super(UUID.fromString(event.getId()), event.getTime(), EventStatusType.RECEIVED, UUID.fromString(event.getRealmId()), event.getError());
         setOperationType(AdminEventOperationType.fromValue(event.getOperationType()));
         setResourceType(AdminEventResourceType.fromValue(event.getResourceType()));
         setResourcePath(event.getResourcePath());
         setRepresentation(event.getRepresentation());
-        setError(event.getError());
-        setResourceId(parseResourceIdFromPath());
-        setResourceIdType(parseResourceIdTypeFromPath());
+        setResourceId(parseResourceIdFromPath(resourcePath));
+        setResourceIdType(parseResourceIdTypeFromPath(resourcePath));
     }
 
-    private ResourceIdType parseResourceIdTypeFromPath() {
+    public AdminEventRepresentationPlaceholder(KeycloakAdminEventJpa entity) {
+        super(entity.getUuid(), entity.getId(), DateUtils.getEpochMilliFromLocalDateTime(entity.getTime()), entity.getStatus(), entity.getRealmId(), entity.getError());
+        setOperationType(entity.getOperationType());
+        setResourceType(entity.getResourceType());
+        setResourcePath(entity.getResourcePath());
+        setResourceId(parseResourceIdFromPath(entity.getResourcePath()));
+        setResourceIdType(parseResourceIdTypeFromPath(entity.getResourcePath()));
+    }
+
+    private ResourceIdType parseResourceIdTypeFromPath(String resourcePath) {
         return Optional.ofNullable(resourcePath)
                 .map(path -> path.split("/")[0])
                 .map(ResourceIdType::fromValue)
@@ -46,7 +53,7 @@ public class AdminEventRepresentationPlaceholder {
     }
 
     @Nullable
-    private UUID parseResourceIdFromPath() {
+    private UUID parseResourceIdFromPath(String resourcePath) {
         return Optional.ofNullable(resourcePath)
                 .map(path -> path.split("/"))
                 .filter(parts -> parts.length > 1)
@@ -55,12 +62,27 @@ public class AdminEventRepresentationPlaceholder {
                 .orElse(null);
     }
 
+    @Nullable
+    public UUID getClientId() {
+        return Optional.ofNullable(resourceIdType)
+                .map(type -> type.equals(ResourceIdType.CLIENTS) ? resourceId : null)
+                .orElse(null);
+    }
+
+    @Nullable
+    public UUID getUserId() {
+        return Optional.ofNullable(resourceIdType)
+                .map(type -> type.equals(ResourceIdType.USERS) ? resourceId : null)
+                .orElse(null);
+    }
+
     @Override
     public String toString() {
         return "AdminEventRepresentationPlaceholder{"
-                + "time=" + getTime()
+                + "uuid=" + getUuid()
+                + ", time=" + getTime()
+                + ", status=" + getStatus()
                 + ", realmId='" + getRealmId() + '\''
-                + ", authDetails=" + getAuthDetails()
                 + ", operationType='" + getOperationType() + '\''
                 + ", resourceType='" + getResourceType() + '\''
                 + ", resourcePath='" + getResourcePath() + '\''

@@ -1,0 +1,21 @@
+def relevant_paths:
+  paths
+  | select( .[-1] | type != "number")  ;
+
+def is_scalar: type | IN("object", "array") | not;
+
+def subtract_json($y):
+  . as $x
+  | reduce ($y | relevant_paths) as $p ( $x;
+      if ((getpath($p)|type == "array") and ($y|getpath($p)|type == "array"))
+      then setpath($p;  getpath($p) - ($y|getpath($p)) )
+      elif ((getpath($p)|is_scalar) and ($y|getpath($p)|is_scalar))
+      then delpaths( [$p] )
+      else .
+      end);
+
+.[0] as $a |
+.[1] as $b |
+$a | subtract_json($b) |
+walk( if type == "object" then with_entries(select(.value != {})) else . end) |
+walk(if type == "object" and has("profiles") then del(.profiles) else . end)

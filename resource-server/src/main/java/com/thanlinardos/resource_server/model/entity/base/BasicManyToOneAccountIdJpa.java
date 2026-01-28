@@ -1,6 +1,6 @@
 package com.thanlinardos.resource_server.model.entity.base;
 
-import com.thanlinardos.resource_server.model.entity.AccountJpa;
+import com.thanlinardos.resource_server.model.entity.account.AccountJpa;
 import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -21,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 public class BasicManyToOneAccountIdJpa extends BasicIdJpa {
 
-    @ManyToOne(targetEntity = AccountJpa.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = AccountJpa.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     @ToString.Exclude
     private AccountJpa account;

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatusCode;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -54,15 +55,16 @@ public class KeycloakServiceUtils {
         }
     }
 
-    public static CustomerModel mapUserResourceToCustomerModel(UserRepresentation user, Integer privilegeLevel) {
+    public static CustomerModel mapUserRepresentationToCustomerModel(UserRepresentation user, Integer privilegeLevel, @Nullable Long id) {
         LocalDateTime createdAt = LocalDateTime.ofEpochSecond(user.getCreatedTimestamp(), 0, ZoneOffset.UTC);
         return CustomerModel.builder()
+                .id(id)
                 .username(user.getUsername())
                 .uuid(UUID.fromString(user.getId()))
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .mobileNumber(user.getRawAttributes().get("mobileNumber").getFirst())
+                .mobileNumber(getMobileNumber(user))
                 .enabled(user.isEnabled())
                 .privilegeLevel(privilegeLevel)
                 .createdAt(createdAt)
@@ -72,8 +74,16 @@ public class KeycloakServiceUtils {
                 .build();
     }
 
-    public static ClientModel mapClientResourceToClientModel(ClientRepresentation client, Integer privilegeLevel, LocalDateTime createdAt, @Nullable String serviceAccountId) {
+    @Nullable
+    private static String getMobileNumber(UserRepresentation user) {
+        return Optional.ofNullable(user.getRawAttributes().get("mobileNumber"))
+                .map(List::getFirst)
+                .orElse(null);
+    }
+
+    public static ClientModel mapClientRepresentationToClientModel(ClientRepresentation client, Integer privilegeLevel, LocalDateTime createdAt, @Nullable String serviceAccountId, @Nullable Long id) {
         return ClientModel.builder()
+                .id(id)
                 .uuid(UUID.fromString(client.getId()))
                 .serviceAccountId(ParserUtil.safeParseUUID(serviceAccountId))
                 .name(client.getClientId())

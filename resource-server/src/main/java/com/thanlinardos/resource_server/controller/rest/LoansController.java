@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.rest;
 
 import com.thanlinardos.resource_server.model.mapped.LoanModel;
-import com.thanlinardos.resource_server.service.LoanService;
+import com.thanlinardos.resource_server.service.economy.LoanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

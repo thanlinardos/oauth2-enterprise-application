@@ -38,7 +38,8 @@ owasp-dependency-check-logs/
 
 # Configs and resources
 flyway.conf
-src/main/resources/cert
+src/main/resources/certificate_scripts/cert
+src/main/resources/certificate_scripts/clients.csv
 
 src/main/resources/db/h2/*
 src/main/resources/db/migration/*
@@ -46,8 +47,13 @@ src/main/resources/db/migration/*
 !src/main/resources/db/h2/clearUserData.sql
 !src/main/resources/db/migration/V1_0_1__custom_users.sql
 !src/main/resources/db/migration/V1_0_3__account_tables.sql
+!src/main/resources/db/migration/V1_0_7__add_event_tables.sql
 
 src/main/resources/static/assets/css/style-starter.css
 src/main/resources/static/assets/webfonts/**
 src/main/resources/keycloak/themes/bankappui/login/resources/fonts/**
 src/main/resources/keycloak/keycloak.cnf
+src/main/resources/certificate_scripts/generateAndInstallAllCertificates.sh
+src/main/resources/restartVaultContainer.sh
+src/main/resources/certificate_scripts/refreshAndInstallCerts.sh
+src/main/resources/app-config-scripts/exports

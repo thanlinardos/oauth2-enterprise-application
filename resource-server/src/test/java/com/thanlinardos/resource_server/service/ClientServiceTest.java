@@ -1,12 +1,13 @@
 package com.thanlinardos.resource_server.service;
 
-import com.thanlinardos.resource_server.model.entity.ClientJpa;
-import com.thanlinardos.resource_server.model.entity.OwnerJpa;
+import com.thanlinardos.resource_server.model.entity.owner.ClientJpa;
+import com.thanlinardos.resource_server.model.entity.owner.OwnerJpa;
+import com.thanlinardos.resource_server.model.info.Client;
 import com.thanlinardos.resource_server.model.mapped.ClientModel;
-import com.thanlinardos.resource_server.service.userservice.api.UserService;
+import com.thanlinardos.resource_server.repository.api.ClientRepository;
+import com.thanlinardos.resource_server.service.owner.ClientService;
+import com.thanlinardos.resource_server.service.user.api.UserService;
 import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,10 @@ import org.mockito.Mock;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @CoreTest
@@ -32,15 +31,15 @@ class ClientServiceTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2025, 1, 1, 1, 1);
 
-    @Mock private EntityManager entityManager;
     @Mock private UserService userService;
+    @Mock private ClientRepository clientRepository;
 
     @InjectMocks
     private ClientService clientService;
 
     @BeforeEach
     void setup() {
-        clientService = new ClientService(entityManager, userService);
+        clientService = new ClientService(clientRepository, userService);
     }
 
     public static Stream<Arguments> getClientsParams() {
@@ -62,63 +61,37 @@ class ClientServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getClientsParams")
     void getClients(String description, List<ClientModel> expected) {
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mock(TypedQuery.class));
-        when(entityManager.createQuery(anyString(), any()).getResultList()).thenReturn((List) expected.stream().map(ClientJpa::fromModel).toList());
+        when(clientRepository.findAll()).thenReturn(getEntities(expected));
         List<ClientModel> actual = clientService.getClients();
         Assertions.assertEquals(expected, actual);
     }
 
+    private static List<ClientJpa> getEntities(List<ClientModel> expected) {
+        return expected.stream()
+                .map(ClientJpa::fromModel)
+                .toList();
+    }
+
     @Test
-    void getClientByName() {
+    void getClientByNameOrFetch() {
         String clientName = "testClient";
         ClientJpa clientJpa = ClientJpa.builder().name(clientName).owner(OwnerJpa.builder().id(1L).build()).build();
-        TypedQuery<Object> typedQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(List.of(clientJpa));
+        when(clientRepository.getFirstByName(anyString())).thenReturn(Optional.of(clientJpa));
 
         ClientModel expected = new ClientModel(clientJpa);
-        ClientModel actual = clientService.getClientByName(clientName)
-                .orElseThrow(() -> new AssertionError("Client not found"));
+        ClientModel actual = clientService.getClientByNameOrFetch(clientName);
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void getOwnerByServiceAccountId() {
-        UUID serviceAccountId = UUID.randomUUID();
-        OwnerJpa ownerJpa = buildOwnerWithClient();
-        ClientJpa clientJpa = ClientJpa.builder().serviceAccountId(serviceAccountId).owner(ownerJpa).build();
-        TypedQuery<Object> typedQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(List.of(clientJpa));
-
-        clientService.getOwnerByServiceAccountId(serviceAccountId)
-                .ifPresentOrElse(
-                        ownerModel -> Assertions.assertEquals(ownerJpa.getId(), ownerModel.getId()),
-                        () -> Assertions.fail("Owner not found")
-                );
-    }
-
-    private OwnerJpa buildOwnerWithClient() {
-        return OwnerJpa.builder().id(1L).uuid(UUID.randomUUID()).type("CLIENT").build();
-    }
-
-    @Test
-    void getClientInfoByName() {
+    void getClientInfoByNameOrFetch() {
         String clientName = "testClient";
         ClientJpa clientJpa = ClientJpa.builder().name(clientName).owner(buildOwnerWithClient(clientName)).build();
-        TypedQuery<Object> typedQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(List.of(clientJpa));
+        when(clientRepository.getFirstByName(anyString())).thenReturn(Optional.of(clientJpa));
 
-        clientService.getClientInfoByName(clientName)
-                .ifPresentOrElse(
-                        client -> Assertions.assertEquals(clientName, client.getName()),
-                        () -> Assertions.fail("Client info not found")
-                );
+        Client client = clientService.getClientInfoByNameOrFetch(clientName);
+        Assertions.assertEquals(clientName, client.getName());
     }
 
     private OwnerJpa buildOwnerWithClient(String clientName) {

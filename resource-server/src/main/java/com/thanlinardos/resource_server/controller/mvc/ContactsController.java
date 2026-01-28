@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server.controller.mvc;
 
 import com.thanlinardos.resource_server.model.info.Contact;
-import com.thanlinardos.resource_server.service.ContactService;
+import com.thanlinardos.resource_server.service.contact.ContactService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

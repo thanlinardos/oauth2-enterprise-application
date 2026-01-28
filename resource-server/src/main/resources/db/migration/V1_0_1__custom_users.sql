@@ -20,9 +20,9 @@ BEGIN
             customer_id     int,
             client_id       int,
             privilege_level int unsigned not null,
-            created_at      timestamp    not null default current_timestamp,
+            created_at      datetime(6)    not null default current_timestamp(6),
             created_by      varchar(55)  not null default 'system',
-            updated_at      timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at      datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by      varchar(55)  not null default 'system',
             KEY `fk_customer_owner_idx` (customer_id),
             CONSTRAINT `fk_customer_owner` FOREIGN KEY (customer_id)
@@ -39,9 +39,9 @@ BEGIN
             service_account_id varchar(37),
             name               varchar(55) not null unique,
             category           varchar(55) not null,
-            created_at         timestamp   not null default current_timestamp,
+            created_at         datetime(6)   not null default current_timestamp(6),
             created_by         varchar(55) not null default 'system',
-            updated_at         timestamp   not null default current_timestamp on update current_timestamp,
+            updated_at         datetime(6)   not null default current_timestamp(6) on update current_timestamp(6),
             updated_by         varchar(55) not null default 'system'
         ) ENGINE = InnoDB
           DEFAULT CHARSET = latin1;
@@ -52,15 +52,15 @@ BEGIN
             username                varchar(255) not null unique,
             mobile_number           varchar(13),
             email                   varchar(255) not null unique,
-            first_name              varchar(110),
-            last_name               varchar(110),
+            first_name              varchar(110) charset utf8mb4,
+            last_name               varchar(110) charset utf8mb4,
             enabled                 boolean      not null,
             account_non_expired     boolean      not null default true,
             account_non_locked      boolean      not null default true,
             credentials_non_expired boolean      not null default true,
-            created_at              timestamp    not null default current_timestamp,
+            created_at              datetime(6)    not null default current_timestamp(6),
             created_by              varchar(55)  not null default 'system',
-            updated_at              timestamp    not null default current_timestamp on update current_timestamp,
+            updated_at               datetime(6)    not null default current_timestamp(6) on update current_timestamp(6),
             updated_by              varchar(55)  not null default 'system'
         ) ENGINE = InnoDB
           DEFAULT CHARSET = latin1;
@@ -116,7 +116,7 @@ BEGIN
         (
             id   int         not null auto_increment primary key,
             name varchar(50) not null,
-            time timestamp,
+            time  datetime(6),
             UNIQUE (name)
         ) ENGINE = InnoDB
           DEFAULT CHARSET = latin1;

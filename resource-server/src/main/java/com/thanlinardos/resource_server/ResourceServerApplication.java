@@ -1,7 +1,7 @@
 package com.thanlinardos.resource_server;
 
 import com.thanlinardos.resource_server.model.mapped.RoleModel;
-import com.thanlinardos.resource_server.service.UserRoleCacheService;
+import com.thanlinardos.resource_server.service.role.RoleCacheService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Authority;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +18,11 @@ import java.util.List;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableCaching
-//@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 @Slf4j
 public class ResourceServerApplication {
 
-	private final UserRoleCacheService userRoleCacheService;
+	private final RoleCacheService roleCacheService;
 
     public static void main(String[] args) {
 		SpringApplication.run(ResourceServerApplication.class, args);
@@ -32,8 +31,8 @@ public class ResourceServerApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner() {
 		return args -> {
-			Collection<RoleModel> roles = userRoleCacheService.getAllRoles();
-			List<Authority> authorities = userRoleCacheService.getAllAuthorities();
+			Collection<RoleModel> roles = roleCacheService.getAllRoles();
+			List<Authority> authorities = roleCacheService.getAllAuthorities();
 			log.info("Loaded {} roles and {} authorities", roles.size(), authorities.size());
 		};
 	}
