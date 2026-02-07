@@ -47,7 +47,7 @@ public class AccountService {
      * @return an Optional containing the AccountJpa if found, otherwise empty
      */
     private Optional<AccountJpa> getAccountJpaByCustomerEmail(String email) {
-        return accountRepository.findByOwner_Name(email);
+        return accountRepository.findByOwnerName(email);
     }
 
     public Optional<AccountModel> getAccountByCustomerEmail(String email) {

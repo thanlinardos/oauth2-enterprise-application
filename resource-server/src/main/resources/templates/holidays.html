@@ -124,8 +124,8 @@ Author URL: http://w3layouts.com
 
 <!-- MENU-JS -->
 <script>
-        $(window).on("scroll", function () {
-            var scroll = $(window).scrollTop();
+        $(globalThis).on("scroll", function () {
+            var scroll = $(globalThis).scrollTop();
 
             if (scroll >= 80) {
                 $("#site-header").addClass("nav-fixed");
@@ -139,11 +139,11 @@ Author URL: http://w3layouts.com
             $("header").toggleClass("active");
         });
         $(document).on("ready", function () {
-            if ($(window).width() > 991) {
+            if ($(globalThis).width() > 991) {
                 $("header").removeClass("active");
             }
-            $(window).on("resize", function () {
-                if ($(window).width() > 991) {
+            $(globalThis).on("resize", function () {
+                if ($(globalThis).width() > 991) {
                     $("header").removeClass("active");
                 }
             });

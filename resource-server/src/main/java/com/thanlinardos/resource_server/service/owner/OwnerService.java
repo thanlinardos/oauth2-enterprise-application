@@ -25,7 +25,7 @@ public class OwnerService {
     private final RoleServiceImpl roleService;
 
     public OwnerJpa getOwnerByUsername(String username) {
-        return ownerRepository.getFirstByCustomer_Username(username)
+        return ownerRepository.getFirstByCustomerUsername(username)
                 .orElseThrow(() -> ErrorCode.NONE_FOUND.createCoreException("Owner not found by username: {0}", new Object[]{username}));
     }
 
@@ -90,7 +90,7 @@ public class OwnerService {
 
     @Transactional(readOnly = true)
     public Optional<OwnerModel> getOwnerByServiceAccountId(UUID uuid) {
-        return ownerRepository.getFirstByClient_ServiceAccountId(uuid)
+        return ownerRepository.getFirstByClientServiceAccountId(uuid)
                 .map(OwnerModel::new);
     }
 
@@ -106,7 +106,7 @@ public class OwnerService {
 
     public boolean ownerExistsByClientServiceAccountId(String name) {
         return ParserUtil.safeParseOptionalUUID(name)
-                .map(ownerRepository::existsByClient_ServiceAccountId)
+                .map(ownerRepository::existsByClientServiceAccountId)
                 .orElse(false);
     }
 

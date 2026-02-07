@@ -49,6 +49,7 @@
         <sonar.sources>src,pom.xml</sonar.sources>
         <sonar.test.inclusions>src/test/**/*</sonar.test.inclusions>
         <sonar.tests>src</sonar.tests>
+        <dependency-check-maven.nvdApiKey>placeholder</dependency-check-maven.nvdApiKey>
         <keycloak-client-thanlinardos-fork.version>999.0.0-SNAPSHOT</keycloak-client-thanlinardos-fork.version>
     </properties>
     <dependencies>
@@ -67,12 +68,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.19</version>
+            <version>1.5.27</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.19</version>
+            <version>1.5.27</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,12 +95,32 @@
                     <groupId>commons-lang</groupId>
                     <artifactId>commons-lang</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-jxpath</groupId>
+                    <artifactId>commons-jxpath</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>2.13.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-jxpath</groupId>
+            <artifactId>commons-jxpath</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -146,6 +167,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>11.0.12</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -229,6 +255,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -320,6 +351,7 @@
                 <version>3.5.4</version>
                 <configuration>
                     <argLine>
+                        @{argLine}
                         -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
                         -Xshare:off
                     </argLine>
@@ -365,12 +397,13 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>9.2.0</version>
+                        <version>12.2.0</version>
 
                         <configuration>
                             <mavenSettingsProxyId>https-p</mavenSettingsProxyId>
                             <outputDirectory>${sonar.dependencyCheck.basePath}</outputDirectory>
-                            <nvdApiKey>9b93ed77-5705-4535-bc1f-982eee60c71a</nvdApiKey>
+                            <nvdApiKey>${dependency-check-maven.nvdApiKey}</nvdApiKey>
+                            <nvdDatafeedUrl>https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache</nvdDatafeedUrl>
 
                             <formats>
                                 <format>html</format>

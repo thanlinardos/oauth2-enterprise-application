@@ -29,7 +29,7 @@ BEGIN
         (
             id       int         not null auto_increment primary key,
             name     varchar(55) not null,
-            value    varchar(500),
+            val      varchar(500),
             event_id int         not null,
             KEY `fk_keycloak_event_keycloak_event_details_idx` (event_id),
             CONSTRAINT `fk_keycloak_event_keycloak_event_details_idx` FOREIGN KEY (event_id)

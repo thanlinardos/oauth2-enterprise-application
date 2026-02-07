@@ -33,21 +33,21 @@ public class KeycloakEventDetailsJpa extends BasicIdJpa {
     @Column(name = "name", nullable = false, length = 55)
     private String name;
 
-    @Column(name = "value", length = 500)
+    @Column(name = "val", length = 500)
     @Nullable
-    private String value;
+    private String val;
 
     public static KeycloakEventDetailsJpa fromModel(Map.Entry<String, String> entry) {
         return KeycloakEventDetailsJpa.builder()
                 .name(entry.getKey())
-                .value(entry.getValue())
+                .val(entry.getValue())
                 .build();
     }
 
     public static Map<String, String> toMap(List<KeycloakEventDetailsJpa> details) {
         Map<String, String> map = new HashMap<>();
         for (KeycloakEventDetailsJpa detail : details) {
-            map.put(detail.getName(), detail.getValue());
+            map.put(detail.getName(), detail.getVal());
         }
         return map;
     }

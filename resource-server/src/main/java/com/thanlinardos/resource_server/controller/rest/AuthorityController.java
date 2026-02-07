@@ -20,7 +20,7 @@ public class AuthorityController {
     public ResponseEntity<Authority> createAuthority(@RequestBody AuthorityInfo authorityInfo) {
         AuthorityModel model = AuthorityModel.builder()
                 .name(authorityInfo.name())
-                .accessType(authorityInfo.access())
+                .access(authorityInfo.access())
                 .uri(authorityInfo.uri())
                 .expression(authorityInfo.expression())
                 .build();

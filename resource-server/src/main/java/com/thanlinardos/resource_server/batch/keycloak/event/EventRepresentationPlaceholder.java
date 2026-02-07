@@ -4,6 +4,7 @@ import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakEventDetai
 import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakEventJpa;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.annotation.Nullable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.keycloak.representations.idm.EventRepresentation;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class EventRepresentationPlaceholder extends EventPlaceholder {
 
     private KeycloakUserEventType type;

@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.ROLE_PREFIX;
 
@@ -14,11 +16,11 @@ public class RoleUtils {
     private RoleUtils() {
     }
 
-    public static List<String> getRoleNamesFromRoleRepresentations(List<RoleRepresentation> roleRepresentations) {
+    public static Set<String> getRoleNamesFromRoleRepresentations(List<RoleRepresentation> roleRepresentations) {
         return roleRepresentations.stream()
                 .map(RoleRepresentation::getName)
                 .map(roleName -> ROLE_PREFIX + roleName)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     public static @Nonnull List<String> getRoleNamesFromAuthorities(Collection<? extends GrantedAuthority> authorities) {

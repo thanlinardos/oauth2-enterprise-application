@@ -3,6 +3,7 @@ package com.thanlinardos.resource_server.batch.keycloak.event;
 import com.thanlinardos.resource_server.model.info.TaskType;
 import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public abstract class EventPlaceholder extends BasicIdModel {
 
     private UUID uuid;
@@ -21,7 +23,7 @@ public abstract class EventPlaceholder extends BasicIdModel {
     private UUID realmId;
     private String error;
 
-    public EventPlaceholder(UUID uuid, long id, long time, EventStatusType status, UUID realmId, String error) {
+    protected EventPlaceholder(UUID uuid, long id, long time, EventStatusType status, UUID realmId, String error) {
         super(id);
         this.uuid = uuid;
         this.time = time;

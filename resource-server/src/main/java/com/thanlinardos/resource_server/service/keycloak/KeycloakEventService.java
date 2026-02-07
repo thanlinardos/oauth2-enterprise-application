@@ -8,7 +8,7 @@ import com.thanlinardos.resource_server.batch.keycloak.event.EventPlaceholder;
 import com.thanlinardos.resource_server.batch.keycloak.event.EventRepresentationPlaceholder;
 import com.thanlinardos.resource_server.batch.keycloak.event.EventStatusType;
 import com.thanlinardos.resource_server.batch.keycloak.event.ResourceIdType;
-import com.thanlinardos.resource_server.misc.utils.RoleUtils;
+import com.thanlinardos.resource_server.batch.keycloak.event.RoleRepresentationPlaceholder;
 import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakAdminEventJpa;
 import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakEventJpa;
 import com.thanlinardos.resource_server.model.info.OwnerType;
@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +44,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.thanlinardos.spring_enterprise_library.objects.utils.PredicateUtils.isEqualTo;
 import static java.util.function.Predicate.not;
@@ -105,6 +105,16 @@ public class KeycloakEventService {
         return isNotProcessed(e) || e.isFailed();
     }
 
+    private Set<RoleRepresentationPlaceholder> parseRoleRepresentations(String representation) {
+        try {
+            return ((List<RoleRepresentation>) objectMapper.readerForListOf(RoleRepresentation.class).readValue(representation)).stream()
+                    .map(RoleRepresentationPlaceholder::fromRepresentation)
+                    .collect(Collectors.toSet());
+        } catch (JsonProcessingException e) {
+            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Failed to parse roles from event", e);
+        }
+    }
+
     private <T extends EventPlaceholder> boolean isNotProcessed(T e) {
         return e.getTime() > getLastEventTime();
     }
@@ -126,8 +136,10 @@ public class KeycloakEventService {
 
     private <T extends EventPlaceholder> void saveEvent(T event) {
         switch (event) {
-            case AdminEventRepresentationPlaceholder adminEvent -> adminEventRepository.save(KeycloakAdminEventJpa.fromModel(adminEvent));
-            case EventRepresentationPlaceholder eventPlaceholder -> eventRepository.save(KeycloakEventJpa.fromModel(eventPlaceholder));
+            case AdminEventRepresentationPlaceholder adminEvent ->
+                    adminEventRepository.save(KeycloakAdminEventJpa.fromModel(adminEvent));
+            case EventRepresentationPlaceholder eventPlaceholder ->
+                    eventRepository.save(KeycloakEventJpa.fromModel(eventPlaceholder));
             default -> throw invalidEventClassException(event);
         }
     }
@@ -152,8 +164,10 @@ public class KeycloakEventService {
 
     private <T extends EventPlaceholder> void updateEventToProcessed(T event) {
         switch (event) {
-            case AdminEventRepresentationPlaceholder adminEvent -> adminEventRepository.updateEventToProcessed(adminEvent.getId());
-            case EventRepresentationPlaceholder eventPlaceholder -> eventRepository.updateEventToProcessed(eventPlaceholder.getId());
+            case AdminEventRepresentationPlaceholder adminEvent ->
+                    adminEventRepository.updateEventToProcessed(adminEvent.getId());
+            case EventRepresentationPlaceholder eventPlaceholder ->
+                    eventRepository.updateEventToProcessed(eventPlaceholder.getId());
             default -> throw invalidEventClassException(event);
         }
         event.setStatus(EventStatusType.PROCESSED);
@@ -214,7 +228,7 @@ public class KeycloakEventService {
         return CollectionUtils.contains(events, isEqualTo(event.getUuid(), EventPlaceholder::getUuid));
     }
 
-    private  <T extends EventPlaceholder> boolean hasNoMatchingFailedEvent(T event, List<T> newFailedEvents) {
+    private <T extends EventPlaceholder> boolean hasNoMatchingFailedEvent(T event, List<T> newFailedEvents) {
         return event.getResourceId() == null || newFailedEvents.stream()
                 .noneMatch(isEqualTo(event.getResourceId(), T::getResourceId));
     }
@@ -351,6 +365,7 @@ public class KeycloakEventService {
     }
 
     private void handleRealmRoleMapping(AdminEventRepresentationPlaceholder event) {
+        event.setRoles(parseRoleRepresentations(event.getRepresentation()));
         Set<RoleModel> roles = parseRolesFromEvent(event);
         if (roles.isEmpty()) {
             return;
@@ -392,8 +407,10 @@ public class KeycloakEventService {
 
     private <T extends EventPlaceholder> void logKeycloakEvent(Level level, T event, String message, Object parsedResource) {
         switch (event) {
-            case AdminEventRepresentationPlaceholder adminEvent -> logAdminEvent(level, adminEvent, message, parsedResource);
-            case EventRepresentationPlaceholder eventPlaceholder -> logEvent(level, eventPlaceholder, message, parsedResource);
+            case AdminEventRepresentationPlaceholder adminEvent ->
+                    logAdminEvent(level, adminEvent, message, parsedResource);
+            case EventRepresentationPlaceholder eventPlaceholder ->
+                    logEvent(level, eventPlaceholder, message, parsedResource);
             default -> throw invalidEventClassException(event);
         }
     }
@@ -407,27 +424,13 @@ public class KeycloakEventService {
     }
 
     public Set<RoleModel> parseRolesFromEvent(AdminEventRepresentationPlaceholder event) {
-        try {
-            List<String> roleNames = shouldParseRoles(event) ? parseRoleNames(event.getRepresentation()) : getRolesNamesFromEvent(event);
-            return new HashSet<>(roleService.findRoles(roleNames));
-        } catch (IOException | ClassCastException e) {
-            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Failed to parse roles from event", e);
-        }
+        Set<String> roleNames = getRolesNamesFromEvent(event);
+        return new HashSet<>(roleService.findRoles(roleNames));
     }
 
-    private boolean shouldParseRoles(AdminEventRepresentationPlaceholder event) {
-        return event.getRoles().isEmpty() && event.getRepresentation() != null;
-    }
-
-    private List<String> getRolesNamesFromEvent(AdminEventRepresentationPlaceholder event) {
-        return event.getRoles()
-                .stream()
-                .map(RoleRepresentation::getName)
-                .toList();
-    }
-
-    private List<String> parseRoleNames(String representation) throws JsonProcessingException {
-        List<RoleRepresentation> roleRepresentations = objectMapper.readerForListOf(RoleRepresentation.class).readValue(representation);
-        return RoleUtils.getRoleNamesFromRoleRepresentations(roleRepresentations);
+    private Set<String> getRolesNamesFromEvent(AdminEventRepresentationPlaceholder event) {
+        return event.getRoles().stream()
+                .map(RoleRepresentationPlaceholder::getName)
+                .collect(Collectors.toSet());
     }
 }

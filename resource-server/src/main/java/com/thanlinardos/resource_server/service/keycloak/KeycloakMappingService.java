@@ -123,7 +123,7 @@ public class KeycloakMappingService {
     }
 
     public Set<RoleModel> getRoleModels(List<RoleRepresentation> roles) {
-        Collection<String> roleNames = RoleUtils.getRoleNamesFromRoleRepresentations(roles);
+        Set<String> roleNames = RoleUtils.getRoleNamesFromRoleRepresentations(roles);
         return (Set<RoleModel>) roleService.findRoles(roleNames);
     }
 }

@@ -6,20 +6,20 @@ import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.ba
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.AccessType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.Serializable;
 
 @AllArgsConstructor
 @SuperBuilder
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class AuthorityModel extends BasicIdModel implements Serializable, Authority {
+@Getter
+public class AuthorityModel extends BasicIdModel implements Authority {
 
     private String name;
-    private AccessType accessType;
+    private AccessType access;
     private String uri;
     @Nullable
     private String expression;
@@ -27,29 +27,8 @@ public class AuthorityModel extends BasicIdModel implements Serializable, Author
     public AuthorityModel(AuthorityJpa entity) {
         super(entity);
         this.name = entity.getName();
-        this.accessType = entity.getAccessType();
+        this.access = entity.getAccessType();
         this.uri = entity.getUri();
         this.expression = entity.getExpression();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public AccessType getAccess() {
-        return accessType;
-    }
-
-    @Override
-    public String getUri() {
-        return uri;
-    }
-
-    @Override
-    @Nullable
-    public String getExpression() {
-        return expression;
     }
 }

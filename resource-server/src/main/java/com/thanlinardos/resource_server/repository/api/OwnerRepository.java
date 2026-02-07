@@ -10,11 +10,11 @@ public interface OwnerRepository extends JpaRepository<OwnerJpa, Long>, CustomOw
 
     Optional<OwnerJpa> getFirstByName(String name);
 
-    Optional<OwnerJpa> getFirstByClient_ServiceAccountId(UUID serviceAccountId);
+    Optional<OwnerJpa> getFirstByClientServiceAccountId(UUID serviceAccountId);
 
-    Optional<OwnerJpa> getFirstByCustomer_Username(String username);
+    Optional<OwnerJpa> getFirstByCustomerUsername(String username);
 
-    boolean existsByClient_ServiceAccountId(UUID serviceAccountId);
+    boolean existsByClientServiceAccountId(UUID serviceAccountId);
 
     boolean existsByUuid(UUID uuid);
 

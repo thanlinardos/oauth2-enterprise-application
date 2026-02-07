@@ -4,25 +4,26 @@ import com.thanlinardos.resource_server.model.entity.keycloak.KeycloakAdminEvent
 import com.thanlinardos.spring_enterprise_library.parse.utils.ParserUtil;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.annotation.Nullable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.keycloak.representations.idm.AdminEventRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class AdminEventRepresentationPlaceholder extends EventPlaceholder {
 
     private AdminEventOperationType operationType;
     private AdminEventResourceType resourceType;
     private String resourcePath;
     @Nullable private String representation;
-    private List<RoleRepresentation> roles = new ArrayList<>();
+    private Set<RoleRepresentationPlaceholder> roles = new HashSet<>();
     @Nullable private UUID resourceId;
     @Nullable private ResourceIdType resourceIdType;
 
@@ -89,6 +90,7 @@ public class AdminEventRepresentationPlaceholder extends EventPlaceholder {
                 + ", resourceId='" + getResourceId() + '\''
                 + ", resourceIdType='" + getResourceIdType() + '\''
                 + ", representation=" + getRepresentation()
+                + ", roles=" + getRoles()
                 + ", error=" + getError()
                 + '}';
     }

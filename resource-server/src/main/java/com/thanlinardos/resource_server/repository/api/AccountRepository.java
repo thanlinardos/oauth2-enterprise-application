@@ -9,5 +9,5 @@ public interface AccountRepository extends JpaRepository<AccountJpa, Long> {
 
     Optional<AccountJpa> findByAccountNumber(long accountNumber);
 
-    Optional<AccountJpa> findByOwner_Name(String ownerName);
+    Optional<AccountJpa> findByOwnerName(String ownerName);
 }
